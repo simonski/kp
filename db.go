@@ -37,24 +37,42 @@ func evaluateFilename(filename string) string {
 	return newname
 }
 
+func FileExists(filename string) bool {
+	if _, err := os.Stat(filename); err == nil {
+		return true
+	} else if os.IsNotExist(err) {
+		return false
+	} else {
+		// makes no sense but..
+		return false
+	}
+}
+
 func (cdb *CrypticDB) Load(filename string, pubKey string, privKey string) bool {
 	cdb.Filename = evaluateFilename(filename)
 	cdb.PublicKeyFilename = evaluateFilename(pubKey)
 	cdb.PrivateKeyFilename = evaluateFilename(privKey)
-	jsonFile, err := os.Open(cdb.Filename)
-	if err != nil {
-		fmt.Printf("ERR %v\n", err)
+
+	if !FileExists(cdb.Filename) {
 		db := DB{}
 		db.Entries = make(map[string]DBEntry)
 		cdb.data = db
-		// panic(err)
 	} else {
-		db := DB{}
-		bytes, _ := ioutil.ReadAll(jsonFile)
-		var data map[string]DBEntry
-		json.Unmarshal(bytes, &data)
-		db.Entries = data
-		cdb.data = db
+		jsonFile, err := os.Open(cdb.Filename)
+		if err != nil {
+			fmt.Printf("ERR %v\n", err)
+			db := DB{}
+			db.Entries = make(map[string]DBEntry)
+			cdb.data = db
+			// panic(err)
+		} else {
+			db := DB{}
+			bytes, _ := ioutil.ReadAll(jsonFile)
+			var data map[string]DBEntry
+			json.Unmarshal(bytes, &data)
+			db.Entries = data
+			cdb.data = db
+		}
 	}
 
 	return true
