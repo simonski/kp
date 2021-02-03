@@ -100,7 +100,7 @@ func GetEnvOrDefault(key string, defaultValue string) string {
 }
 
 func LoadDB() *CrypticDB {
-	filename := GetEnvOrDefault("CRYPTIC_DB", "~/.crypticdb.json")
+	filename := GetEnvOrDefault("CRYPTIC_DB", "~/.Crypticfile")
 	pubKey := GetEnvOrDefault("CRYPTIC_PUB_KEY", "~/.ssh/id_rsa.pub")
 	privKey := GetEnvOrDefault("CRYPTIC_PRIV_KEY", "~/.ssh/id_rsa")
 	db := NewCrypticDB(filename, pubKey, privKey)
