@@ -9,7 +9,7 @@ import (
 	goutils "github.com/simonski/goutils"
 )
 
-const VERSION = "1.0.0"
+const VERSION = "1.0.1"
 const GLOBAL_USAGE = `cryptic is a tool for using key/pairs.
 
 Usage:
