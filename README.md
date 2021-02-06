@@ -16,9 +16,22 @@ This will install `cryptic` onto your `$GOBIN`. Please ensure `$GOBIN` is on you
 
 The file itself is plaintext, the values of the keys are encrypted using your public key.
 
+
 ## Verify Setup
 
 (Optional) this step will verify your installation, environment variables, file locations and encryption keys. You don't *have* to do this as the defaults *should* work on modern mac, Windows and Linux variants.
+
+	cryptic verify
+
+You may need to create your encryption keys
+
+	ssh-keygen
+
+Create a pem readable public key
+
+	ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem
+
+Finally, confirm cryptic is setup properly:
 
 	cryptic verify
 
@@ -58,22 +71,9 @@ You can optionally override settings such as encryption, location of files by se
 
 |name|dedscription|default value|
 -----|------------|-------------|
-`$CRYTPIC_FILE`|The file keypairs are stored|`~/.Crypticfile`
-`$CRYTPIC_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
-`$CRYTPIC_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa
+`$CRYPTIC_FILE`|The file keypairs are stored|`~/.Crypticfile`
+`$CRYPTIC_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
+`$CRYPTIC_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
 
-# Initial Setup
-
-1. Create your keypair if you haven't already
-
-	ssh-keygen
-
-2. Create a pem readable public key
-
-	ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem
-
-3. Verify you can create a key/pair 
-
-	cryptic verify
 
 `
