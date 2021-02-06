@@ -1,6 +1,6 @@
 # Cryptic
 
-A terminal tool to manage key/pairs.
+A terminal tool to manage key/pairs. I use it to manage *temporary* passwords on *controlled* hardware.
 
 ## Install
 
@@ -16,12 +16,13 @@ This will install `cryptic` onto your `$GOBIN`. Please ensure `$GOBIN` is on you
 
 The file itself is plaintext, the values of the keys are encrypted using your public key.
 
-## Initial Setup
+## Verify Setup
 
-This will verify your environment variables, file locations and encryption keys.
+(Optional) this step will verify your installation, environment variables, file locations and encryption keys. You don't *have* to do this as the defaults *should* work on modern mac, Windows and Linux variants.
 
 	cryptic verify
 
+Assuming you get a "Verification Success" message, you can then use `cryptic` in the following manner:
 
 ## Store a key
 
@@ -32,6 +33,8 @@ Store a key/value
 Retrieve the value of a to your clipboard
 
 	cryptic <keyname>
+
+> Note: storing and retrieving keys uses the key name as the command (no "get" or "set").  When you retrieve a value, it won't write to STDOUT - your clipboard will contain the value.
 
 List all keys
 
@@ -45,7 +48,7 @@ Remove all keys
 
 	cryptic clear
 
-Get help
+Get help on any command:
 
 	cryptic
 
