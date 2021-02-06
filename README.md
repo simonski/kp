@@ -35,7 +35,7 @@ Finally, confirm cryptic is setup properly:
 
 	cryptic verify
 
-Assuming you get a "Verification Success" message, you can then use `cryptic` in the following manner:
+Assuming you get a "Verification Success" message, you can then use `cryptic` in the following manner - if you don't, it will explain what needs changing in the `verify` command itself.
 
 ## Store a key
 
