@@ -74,6 +74,3 @@ You can optionally override settings such as encryption, location of files by se
 `$CRYPTIC_FILE`|The file keypairs are stored|`~/.Crypticfile`
 `$CRYPTIC_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
 `$CRYPTIC_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
-
-
-`
