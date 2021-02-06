@@ -9,37 +9,15 @@ import (
 	goutils "github.com/simonski/goutils"
 )
 
-const VERSION = "1.0.1"
-const GLOBAL_USAGE = `cryptic is a tool for using key/pairs.
-
-Usage:
-
-    cryptic <key | command> <value>
-
-The commands are:
-
-    ls                  list keys
-    rm [key]            remove key "key"
-    key                 get the value of "key"
-    key value           overwrite the value of "key"
-
-    clear               remove all values
-    version             print application version"
-
-`
-
 func main() {
 	cli := goutils.NewCLI(os.Args)
 	command := cli.GetCommand()
-	if command == "test" {
-		db := LoadDB()
-		value := cli.GetStringOrDie(command)
-		value_enc := db.Encrypt(value)
-		value_dec := db.Decrypt(value_enc)
-		fmt.Printf("Encrypt '%v' = '%v', decrypt = '%v'\n", value, value_enc, value_dec)
-		os.Exit(0)
-	}
-	if isVersion(command) {
+	if command == "help" {
+		fmt.Printf("ssh-keygen -m pem -f ~/.ssh/id_rsa\n")
+		fmt.Printf("ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem\n")
+	} else if isInfo(command) {
+		DoInfo(cli)
+	} else if isVersion(command) {
 		DoVersion(cli)
 	} else if isClear(command) {
 		DoClear(cli)
@@ -72,6 +50,10 @@ func isClear(command string) bool {
 	return command == "clear"
 }
 
+func isInfo(command string) bool {
+	return command == "info"
+}
+
 // A 'get' is basically not a a list, delete or a put
 func isGet(command string, cli *goutils.CLI) bool {
 	return command != "" && !isPut(command, cli) && !isDelete(command) && !isList(command)
@@ -90,21 +72,28 @@ func isPut(command string, cli *goutils.CLI) bool {
 
 }
 
-func GetEnvOrDefault(key string, defaultValue string) string {
-	value := os.Getenv(key)
-	if value != "" {
-		return value
-	} else {
-		return defaultValue
-	}
+func LoadDB() *CrypticDB {
+	filename := goutils.GetEnvOrDefault(CRYPTIC_FILE, "~/.Crypticfile")
+	pubKey := goutils.GetEnvOrDefault(CRYPTIC_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
+	privKey := goutils.GetEnvOrDefault(CRYPTIC_PRIVATE_KEY, "~/.ssh/id_rsa")
+	encryptionEnabled := goutils.GetEnvOrDefault(CRYPTIC_ENCRYPTION_ENABLED, "1") == "1"
+	db := NewCrypticDB(filename, pubKey, privKey, encryptionEnabled)
+	return db
 }
 
-func LoadDB() *CrypticDB {
-	filename := GetEnvOrDefault("CRYPTIC_DB", "~/.Crypticfile")
-	pubKey := GetEnvOrDefault("CRYPTIC_PUB_KEY", "~/.ssh/id_rsa.pub")
-	privKey := GetEnvOrDefault("CRYPTIC_PRIV_KEY", "~/.ssh/id_rsa")
-	db := NewCrypticDB(filename, pubKey, privKey)
-	return db
+func DoInfo(cli *goutils.CLI) {
+	filename := goutils.GetEnvOrDefault(CRYPTIC_FILE, "~/.Crypticfile")
+	publicKey := goutils.GetEnvOrDefault(CRYPTIC_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
+	privateKey := goutils.GetEnvOrDefault(CRYPTIC_PRIVATE_KEY, "~/.ssh/id_rsa")
+
+	filenameExists := goutils.FileExists(goutils.EvaluateFilename(filename))
+	publicKeyExists := goutils.FileExists(goutils.EvaluateFilename(publicKey))
+	privateKeyExists := goutils.FileExists(goutils.EvaluateFilename(privateKey))
+
+	fmt.Printf("%v          =%v, exists=%v\n", CRYPTIC_FILE, filename, filenameExists)
+	fmt.Printf("%v =%v, exists=%v\n", CRYPTIC_PUBLIC_KEY, publicKey, publicKeyExists)
+	fmt.Printf("%v =%v, exists=%v\n", CRYPTIC_PRIVATE_KEY, privateKey, privateKeyExists)
+	// fmt.Printf("%v =%v, exists=%v\n", CRYPTIC_ENCRYPTION_ENABLED, privateKeyExists)
 }
 
 func DoGet(cli *goutils.CLI) {
@@ -114,8 +103,11 @@ func DoGet(cli *goutils.CLI) {
 	if exists {
 		value := entry.Value
 		clipboard.WriteAll(value)
+		if cli.IndexOf("-stdout") > -1 {
+			fmt.Printf("%v\n", value)
+		}
 	} else {
-		fmt.Printf("'%v' does not exist.", key)
+		fmt.Printf("'%v' does not exist.\n", key)
 		os.Exit(1)
 	}
 }
