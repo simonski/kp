@@ -41,13 +41,12 @@ Assuming you get a "Verification Success" message, you can then use `cryptic` in
 
 Store a key/value
 
-	cryptic <keyname> <value>
+	cryptic put <keyname> [-m message]
+	>> STDINT value
 
-Retrieve the value of a to your clipboard
+Retrieve the value of a key to your clipboard
 
-	cryptic <keyname>
-
-> Note: storing and retrieving keys uses the key name as the command (no "get" or "set").  When you retrieve a value, it won't write to STDOUT - your clipboard will contain the value.
+	cryptic get <keyname>
 
 List all keys
 

@@ -1,7 +1,7 @@
 package main
 
 // VERSION is the number of this beast
-const VERSION = "1.0.2-beta"
+const VERSION = "1.0.4-beta"
 
 // CRYPTIC_FILE the key for the env var pointint to the file we load/save
 const CRYPTIC_FILE = "CRYPTIC_FILE"
@@ -25,6 +25,8 @@ Usage:
 The commands are:
 
     ls                  list keys
+    put [key]           read "key" from stdin 
+    get [key]           retrieve key/value to clipboard
     rm [key]            remove key "key"
     key                 get the value of "key"
     key value           overwrite the value of "key"

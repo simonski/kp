@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"syscall"
 
 	clipboard "github.com/atotto/clipboard"
 	goutils "github.com/simonski/goutils"
+
+	terminal "golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
@@ -23,10 +26,10 @@ func main() {
 		DoClear(cli)
 	} else if isList(command) {
 		DoList(cli)
-	} else if isGet(command, cli) {
-		DoGet(cli)
 	} else if isPut(command, cli) {
 		DoPut(cli)
+	} else if isGet(command, cli) {
+		DoGet(cli)
 	} else if isDelete(command) {
 		DoDelete(cli)
 	} else {
@@ -56,20 +59,11 @@ func isInfo(command string) bool {
 
 // A 'get' is basically not a a list, delete or a put
 func isGet(command string, cli *goutils.CLI) bool {
-	return command != "" && !isPut(command, cli) && !isDelete(command) && !isList(command)
+	return command == "get"
 }
 
 func isPut(command string, cli *goutils.CLI) bool {
-	if isDelete(command) || isList(command) {
-		return false
-	}
-	value := cli.GetStringOrDefault(command, "")
-	if value == "" {
-		// can't be a put as there is no value
-		return false
-	}
-	return true
-
+	return command == "put"
 }
 
 func LoadDB() *CrypticDB {
@@ -97,7 +91,8 @@ func DoInfo(cli *goutils.CLI) {
 }
 
 func DoGet(cli *goutils.CLI) {
-	key := cli.GetCommand()
+	command := cli.GetCommand()
+	key := cli.GetStringOrDie(command)
 	db := LoadDB()
 	entry, exists := db.Get(key)
 	if exists {
@@ -114,9 +109,13 @@ func DoGet(cli *goutils.CLI) {
 
 func DoPut(cli *goutils.CLI) {
 	db := LoadDB()
-	key := cli.GetCommand()
-	value := cli.GetStringOrDefault(key, "")
-	db.Put(key, value)
+	command := cli.GetCommand()
+	key := cli.GetStringOrDie(command)
+	bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
+	password := string(bytePassword)
+	value := password
+	description := cli.GetStringOrDefault("-m", "")
+	db.Put(key, value, description)
 	db.Save()
 }
 
@@ -142,9 +141,15 @@ func DoList(cli *goutils.CLI) {
 			keys = append(keys, key)
 		}
 		sort.Strings(keys)
+		fmt.Printf("------------------------------------------------------------------------------------------------------------------\n")
+		fmt.Printf("| Key       | Description          | Last Updated                         | Created                              |\n")
+		fmt.Printf("------------------------------------------------------------------------------------------------------------------\n")
 		for _, key := range keys {
-			fmt.Printf("%v\n", key)
+			// fmt.Printf("%v\n", key)
+			entry := data.Entries[key]
+			fmt.Printf("| %-10v| %-20v | %v | %v |\n", key, entry.Description, entry.LastUpdated, entry.Created)
 		}
+		fmt.Printf("------------------------------------------------------------------------------------------------------------------\n")
 	}
 }
 
