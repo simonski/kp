@@ -4,34 +4,46 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"syscall"
 
 	clipboard "github.com/atotto/clipboard"
 	goutils "github.com/simonski/goutils"
+
+	terminal "golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
 	cli := goutils.NewCLI(os.Args)
 	command := cli.GetCommand()
 	if command == "help" {
-		fmt.Printf("ssh-keygen -m pem -f ~/.ssh/id_rsa\n")
-		fmt.Printf("ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem\n")
-	} else if isInfo(command) {
-		DoInfo(cli)
+		DoUsage(cli)
+	} else if isVerify(command) {
+		DoVerify(cli, false)
 	} else if isVersion(command) {
 		DoVersion(cli)
 	} else if isClear(command) {
 		DoClear(cli)
 	} else if isList(command) {
 		DoList(cli)
-	} else if isGet(command, cli) {
-		DoGet(cli)
 	} else if isPut(command, cli) {
+		DoVerify(cli, true)
 		DoPut(cli)
+	} else if isGet(command, cli) {
+		DoVerify(cli, true)
+		DoGet(cli)
 	} else if isDelete(command) {
 		DoDelete(cli)
+	} else if command != "" {
+		fmt.Printf("cryptic %v: unknown command\n", command)
+		fmt.Printf("Run 'cryptic help' for usage.\n")
+		os.Exit(1)
 	} else {
 		DoUsage(cli)
 	}
+}
+
+func isVerify(command string) bool {
+	return command == "verify"
 }
 
 func isDelete(command string) bool {
@@ -50,26 +62,13 @@ func isClear(command string) bool {
 	return command == "clear"
 }
 
-func isInfo(command string) bool {
-	return command == "info"
-}
-
 // A 'get' is basically not a a list, delete or a put
 func isGet(command string, cli *goutils.CLI) bool {
-	return command != "" && !isPut(command, cli) && !isDelete(command) && !isList(command)
+	return command == "get"
 }
 
 func isPut(command string, cli *goutils.CLI) bool {
-	if isDelete(command) || isList(command) {
-		return false
-	}
-	value := cli.GetStringOrDefault(command, "")
-	if value == "" {
-		// can't be a put as there is no value
-		return false
-	}
-	return true
-
+	return command == "put"
 }
 
 func LoadDB() *CrypticDB {
@@ -81,7 +80,10 @@ func LoadDB() *CrypticDB {
 	return db
 }
 
-func DoInfo(cli *goutils.CLI) {
+// DoVerify performs verification of ~/.Crypticfile, encryption/decryption using
+// specified keys
+func DoVerify(cli *goutils.CLI, failOnError bool) {
+	overallValid := true
 	filename := goutils.GetEnvOrDefault(CRYPTIC_FILE, "~/.Crypticfile")
 	publicKey := goutils.GetEnvOrDefault(CRYPTIC_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
 	privateKey := goutils.GetEnvOrDefault(CRYPTIC_PRIVATE_KEY, "~/.ssh/id_rsa")
@@ -90,14 +92,76 @@ func DoInfo(cli *goutils.CLI) {
 	publicKeyExists := goutils.FileExists(goutils.EvaluateFilename(publicKey))
 	privateKeyExists := goutils.FileExists(goutils.EvaluateFilename(privateKey))
 
-	fmt.Printf("%v          =%v, exists=%v\n", CRYPTIC_FILE, filename, filenameExists)
-	fmt.Printf("%v =%v, exists=%v\n", CRYPTIC_PUBLIC_KEY, publicKey, publicKeyExists)
-	fmt.Printf("%v =%v, exists=%v\n", CRYPTIC_PRIVATE_KEY, privateKey, privateKeyExists)
+	messages := make([]string, 0)
+	messages = append(messages, fmt.Sprintf("%v          %v\n", CRYPTIC_FILE, filename))
+	messages = append(messages, fmt.Sprintf("%v    %v\n", CRYPTIC_PUBLIC_KEY, publicKey))
+	messages = append(messages, fmt.Sprintf("%v   %v\n", CRYPTIC_PRIVATE_KEY, privateKey))
+
+	overallValid = filenameExists && publicKeyExists && privateKeyExists
+	if !filenameExists {
+		line := fmt.Sprintf("Crypticfile '%v' does not exist.\n", filename)
+		messages = append(messages, line)
+		overallValid = false
+	} else {
+		// line := fmt.Sprintf("Crypticfile '%v' exists.\n", filename)
+		// messages = append(messages, line)
+	}
+
+	if !publicKeyExists {
+		line := fmt.Sprintf("Public key '%v' does not exist.\n", publicKey)
+		messages = append(messages, line)
+		overallValid = false
+	} else {
+		// line := fmt.Sprintf("Public key '%v' exists.\n", publicKey)
+		// messages = append(messages, line)
+	}
+
+	if !privateKeyExists {
+		line := fmt.Sprintf("Private key '%v' does not exist.\n", privateKey)
+		messages = append(messages, line)
+		overallValid = false
+	} else {
+		// line := fmt.Sprintf("Private key '%v' exists.\n", privateKey)
+		// messages = append(messages, line)
+	}
+
+	if publicKeyExists && privateKeyExists {
+		// try to encrypt/decrypt something
+		plain := "Hello, World"
+		encrypted := Encrypt(plain, publicKey)
+		decrypted := Decrypt(encrypted, privateKey)
+		if plain == decrypted {
+			// line := fmt.Sprintf("Encrypt/Decrypt works.\n")
+			// messages = append(messages, line)
+		} else {
+			line := fmt.Sprintf("Encrypt/Decrypt not working.\n")
+			messages = append(messages, line)
+			overallValid = false
+		}
+
+	} else {
+		messages = append(messages, "\nPublic/private keys do not exist, try the following\n\n")
+		line := fmt.Sprintf("    ssh-keygen -m pem -f ~/.ssh/id_rsa\n")
+		messages = append(messages, line)
+		line = fmt.Sprintf("    ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem\n\n")
+		messages = append(messages, line)
+	}
+
+	for _, line := range messages {
+		fmt.Printf(line)
+	}
+	if overallValid {
+		fmt.Printf("cryptic verify : OK.\n")
+	} else {
+		// fmt.Printf("cryptic verify: NOT OK.\n")
+	}
+
 	// fmt.Printf("%v =%v, exists=%v\n", CRYPTIC_ENCRYPTION_ENABLED, privateKeyExists)
 }
 
 func DoGet(cli *goutils.CLI) {
-	key := cli.GetCommand()
+	command := cli.GetCommand()
+	key := cli.GetStringOrDie(command)
 	db := LoadDB()
 	entry, exists := db.Get(key)
 	if exists {
@@ -114,9 +178,22 @@ func DoGet(cli *goutils.CLI) {
 
 func DoPut(cli *goutils.CLI) {
 	db := LoadDB()
-	key := cli.GetCommand()
-	value := cli.GetStringOrDefault(key, "")
-	db.Put(key, value)
+	command := cli.GetCommand()
+	key := cli.GetStringOrDie(command)
+	description := cli.GetStringOrDefault("-d", "")
+	password := ""
+	if cli.IndexOf("-value") > -1 {
+		password = cli.GetStringOrDefault("-value", "")
+		if password == "" {
+			fmt.Printf("Error, -value cannot be empty.")
+			os.Exit(1)
+		}
+	} else {
+		bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
+		password = string(bytePassword)
+	}
+	value := password
+	db.Put(key, value, description)
 	db.Save()
 }
 
@@ -142,9 +219,17 @@ func DoList(cli *goutils.CLI) {
 			keys = append(keys, key)
 		}
 		sort.Strings(keys)
+		fmt.Printf("--------------------------------------------------------------------------\n")
+		fmt.Printf("| Key       | Description          | Last Updated      | Created         |\n")
+		fmt.Printf("--------------------------------------------------------------------------\n")
 		for _, key := range keys {
-			fmt.Printf("%v\n", key)
+			// fmt.Printf("%v\n", key)
+			entry := data.Entries[key]
+			createdStr := entry.Created.Format("January 2, 2006")
+			updatedStr := entry.LastUpdated.Format("January 2, 2006")
+			fmt.Printf("| %-10v| %-20v | %v | %v |\n", key, entry.Description, updatedStr, createdStr)
 		}
+		fmt.Printf("--------------------------------------------------------------------------\n")
 	}
 }
 

@@ -14,8 +14,7 @@ This will install `cryptic` onto your `$GOBIN`. Please ensure `$GOBIN` is on you
 
 `cryptic` stores keypairs to a `~/.Crypticfile`
 
-The file itself is plaintext, the values of the keys are encrypted using your public key.
-
+The file itself is plaintext, the values of the keys are *encrypted* using your public key.
 
 ## Verify Setup
 
@@ -41,13 +40,12 @@ Assuming you get a "Verification Success" message, you can then use `cryptic` in
 
 Store a key/value
 
-	cryptic <keyname> <value>
+	cryptic put <keyname> [-m message]
+	>> STDIN value
 
-Retrieve the value of a to your clipboard
+Retrieve the value of a key to your clipboard
 
-	cryptic <keyname>
-
-> Note: storing and retrieving keys uses the key name as the command (no "get" or "set").  When you retrieve a value, it won't write to STDOUT - your clipboard will contain the value.
+	cryptic get <keyname>
 
 List all keys
 
@@ -74,3 +72,7 @@ You can optionally override settings such as encryption, location of files by se
 `$CRYPTIC_FILE`|The file keypairs are stored|`~/.Crypticfile`
 `$CRYPTIC_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
 `$CRYPTIC_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
+
+# Releases
+
+I use github actions to create a crossplatform release binary on a tag.

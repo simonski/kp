@@ -1,7 +1,7 @@
 package main
 
 // VERSION is the number of this beast
-const VERSION = "1.0.2-beta"
+const VERSION = "0.0.1"
 
 // CRYPTIC_FILE the key for the env var pointint to the file we load/save
 const CRYPTIC_FILE = "CRYPTIC_FILE"
@@ -20,16 +20,17 @@ const GLOBAL_USAGE = `cryptic is a tool for using key/pairs.
 
 Usage:
 
-    cryptic <key | command> <value>
+    cryptic <command> [arguments]
 
 The commands are:
 
-    ls                  list keys
-    rm [key]            remove key "key"
-    key                 get the value of "key"
-    key value           overwrite the value of "key"
+    ls                                          list keys
+    put <key> (-value VALUE) (-d description)   save "key/value" (read stdin if "-value" is unspecified)
+    get <key> (-stdout)                         retrieve key/value to clipboard (or -stdout)
+    rm <key>                                    permanently remove "key"
 
-    clear               remove all values
-    version             print application version"
+    verify                                      check encryption keys exist and work
+    clear                                       remove all values
+    version                                     print application version"
 
 `

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	goutils "github.com/simonski/goutils"
 )
@@ -26,9 +27,11 @@ type DB struct {
 
 // DBEntry represents the a single item in the DB
 type DBEntry struct {
-	Key         string `json:"key"`
-	Value       string `json:"value"`
-	Description string `json:"description"`
+	Key         string    `json:"key"`
+	Value       string    `json:"value"`
+	Description string    `json:"description"`
+	LastUpdated time.Time `json:"lastUpdated"`
+	Created     time.Time `json:"created"`
 }
 
 // NewCrypticDB constructor
@@ -105,7 +108,7 @@ func (cdb *CrypticDB) Get(key string) (DBEntry, bool) {
 }
 
 // Put stores (or replaces) the key/value pair
-func (cdb *CrypticDB) Put(key string, value string) {
+func (cdb *CrypticDB) Put(key string, value string, description string) {
 	entry, exists := cdb.data.Entries[key]
 	encValue := value
 	if cdb.EncryptionEnabled {
@@ -113,9 +116,16 @@ func (cdb *CrypticDB) Put(key string, value string) {
 	}
 	if exists {
 		entry.Value = encValue
+		entry.LastUpdated = time.Now()
+		if description != "" {
+			entry.Description = description
+		}
 		cdb.data.Entries[key] = entry
 	} else {
-		entry = DBEntry{Key: key, Value: encValue}
+		entry = DBEntry{Key: key, Value: encValue, Created: time.Now(), LastUpdated: time.Now()}
+		if description != "" {
+			entry.Description = description
+		}
 		cdb.data.Entries[key] = entry
 	}
 }

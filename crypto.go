@@ -5,16 +5,40 @@ import (
 	"crypto/rsa"
 	"crypto/sha512"
 	"crypto/x509"
+	b64 "encoding/base64"
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+
+	goutils "github.com/simonski/goutils"
 )
+
+func Encrypt(value string, publicKeyFilename string) string {
+	f := goutils.EvaluateFilename(publicKeyFilename)
+	publicKey := LoadPublicKey(f)
+	bytes := []byte(value)
+	encrypted := EncryptWithPublicKey(bytes, publicKey)
+	s := b64.StdEncoding.EncodeToString(encrypted)
+	return s
+}
+
+// Decrypt helper function decrypts with private key
+func Decrypt(value string, privateKeyFilename string) string {
+	f := goutils.EvaluateFilename(privateKeyFilename)
+	uDec, _ := b64.StdEncoding.DecodeString(value)
+	privateKey := LoadPrivateKey(f)
+	bytes := []byte(uDec)
+	decrypted := DecryptWithPrivateKey(bytes, privateKey)
+	s := string(decrypted)
+	return s
+}
 
 // LoadPrivateKey loads the filename to a *rsa.PrivateKey
 func LoadPrivateKey(filename string) *rsa.PrivateKey {
-	bytes, err := ioutil.ReadFile(filename)
+	f := goutils.EvaluateFilename(filename)
+	bytes, err := ioutil.ReadFile(f)
 	if err != nil {
 		panic(err)
 	}
@@ -23,7 +47,8 @@ func LoadPrivateKey(filename string) *rsa.PrivateKey {
 
 // LoadPublicKey loads the filename to a *rsa.PublicKey
 func LoadPublicKey(filename string) *rsa.PublicKey {
-	bytes, err := ioutil.ReadFile(filename)
+	f := goutils.EvaluateFilename(filename)
+	bytes, err := ioutil.ReadFile(f)
 	if err != nil {
 		panic(err)
 	}

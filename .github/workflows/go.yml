@@ -1,0 +1,34 @@
+name: Go
+
+# https://dev.to/koddr/github-action-for-release-your-go-projects-as-fast-and-easily-as-possible-20a2
+on:
+  push:
+    tags: 
+      - "*" # builds on any tag we make
+
+jobs:
+  build:
+    name: GoReleaser build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code into the go module directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go 1.15
+        uses: actions/setup-go@v2
+        with: 
+          go-version: 1.15
+        id: go
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@master
+        with:
+          version: latest
+          args: release --rm-dist
+        env:
+          # this is in github, I called it  GO_RELEASER_GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
