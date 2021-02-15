@@ -2,7 +2,7 @@ name: Go
 
 on:
   push:
-    branches: [ features/github_actions_crossplatform_release ]
+    branches: [ features/actions ]
   pull_request:
     branches: [ develop ]
 
