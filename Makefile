@@ -13,6 +13,7 @@ usage:
 	@echo "  build                 - creates binary"
 	@echo "  run                   - runs in go run"
 	@echo "  install               - builds and installs"
+	@echo "  release               - creates the crossplatorm releases"
 	@echo ""
 	@echo "  all                   - all of the above"
 	@echo ""
@@ -37,3 +38,7 @@ run:
 
 all: clean build test
 	go install
+
+release:
+	goreleaser --snapshot --skip-publish --rm-dist
+
