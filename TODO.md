@@ -2,6 +2,10 @@
 
 Before I can release on @master and @1.0.0 I need to
 
+- investigate overall binary size (5MB - can it be smaller?)
+- `cryptic verify` ssh public key verification/generation
+- ~~"I don't know how to 'x' did you mean 'put'?"~~
+- ~~get/put stdout~~
 - github actions from crosscompiling
 - setup dependency on goutils as formal - version goutils as github.com/simonski/goutils@1.0.0
 - review unit tests/coverage
@@ -11,7 +15,6 @@ Before I can release on @master and @1.0.0 I need to
 - verify initial setup - linux
 - "help" on all function calls
 - investigate reading secrets or writing secrets from stdin as password characters
-- investigate overall binary size (5MB - can it be smaller?)
 - "init", "verify", "setup" steps to be described and completed
 - ~~accept input secretly by default via  crpytic put~~
 - ~~description on key~~

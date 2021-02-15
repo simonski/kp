@@ -20,18 +20,17 @@ const GLOBAL_USAGE = `cryptic is a tool for using key/pairs.
 
 Usage:
 
-    cryptic <key | command> <value>
+    cryptic <command> [arguments]
 
 The commands are:
 
-    ls                  list keys
-    put [key]           read "key" from stdin 
-    get [key]           retrieve key/value to clipboard
-    rm [key]            remove key "key"
-    key                 get the value of "key"
-    key value           overwrite the value of "key"
+    ls                                          list keys
+    put <key> (-value VALUE) (-d description)   save "key/value" (read stdin if "-value" is unspecified)
+    get <key> (-stdout)                         retrieve key/value to clipboard (or -stdout)
+    rm <key>                                    permanently remove "key"
 
-    clear               remove all values
-    version             print application version"
+    verify                                      check encryption keys exist and work
+    clear                                       remove all values
+    version                                     print application version"
 
 `

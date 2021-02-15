@@ -14,8 +14,7 @@ This will install `cryptic` onto your `$GOBIN`. Please ensure `$GOBIN` is on you
 
 `cryptic` stores keypairs to a `~/.Crypticfile`
 
-The file itself is plaintext, the values of the keys are encrypted using your public key.
-
+The file itself is plaintext, the values of the keys are *encrypted* using your public key.
 
 ## Verify Setup
 
@@ -73,3 +72,10 @@ You can optionally override settings such as encryption, location of files by se
 `$CRYPTIC_FILE`|The file keypairs are stored|`~/.Crypticfile`
 `$CRYPTIC_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
 `$CRYPTIC_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
+
+# Releases
+
+https://goreleaser.com/quick-start/
+goreleaser init
+
+goreleaser --snapshot --skip-publish --rm-dist
