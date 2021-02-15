@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code into the go module directory
         uses: actions/checkout@v2
         with:
-        fetch-depth: 0
+          fetch-depth: 0
 
       - name: Setup Go 1.15
         uses: actions/setup-go@v2
