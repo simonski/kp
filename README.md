@@ -41,7 +41,7 @@ Assuming you get a "Verification Success" message, you can then use `cryptic` in
 Store a key/value
 
 	cryptic put <keyname> [-m message]
-	>> STDINT value
+	>> STDIN value
 
 Retrieve the value of a key to your clipboard
 
@@ -75,7 +75,4 @@ You can optionally override settings such as encryption, location of files by se
 
 # Releases
 
-https://goreleaser.com/quick-start/
-goreleaser init
-
-goreleaser --snapshot --skip-publish --rm-dist
+I use github actions to create a crossplatform release binary on a tag.

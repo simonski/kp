@@ -1,7 +1,7 @@
 package main
 
 // VERSION is the number of this beast
-const VERSION = "1.0.4-beta"
+const VERSION = "0.0.1"
 
 // CRYPTIC_FILE the key for the env var pointint to the file we load/save
 const CRYPTIC_FILE = "CRYPTIC_FILE"
