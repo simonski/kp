@@ -28,10 +28,10 @@ func main() {
 	} else if isList(command) {
 		DoList(cli)
 	} else if isPut(command, cli) {
-		DoVerify(cli, true)
+		// DoVerify(cli, true)
 		DoPut(cli)
 	} else if isGet(command, cli) {
-		DoVerify(cli, true)
+		// DoVerify(cli, true)
 		DoGet(cli)
 	} else if isDelete(command) {
 		DoDelete(cli)
