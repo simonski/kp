@@ -40,7 +40,7 @@ const GLOBAL_SSH_KEYGEN_USAGE = `The following will create a key/pair for encryp
 
      ssh-keygen -m pem -f ~/.ssh/id_rsa_cryptic
      ssh-keygen -f ~/.ssh/id_rsa_cryptic.pub -e -m pem > ~/.ssh/id_rsa_cryptic.pem
-     
+
      export CRYPTIC_FILE=~/.Crypticfile
      export CRYPTIC_PRIVATE_KEY=~/.ssh/id_rsa_cryptic
      export CRYPTIC_PUBLIC_KEY=~/.ssh/id_rsa_cryptic.pem
