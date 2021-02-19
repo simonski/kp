@@ -29,8 +29,20 @@ The commands are:
     get <key> (-stdout)                         retrieve key/value to clipboard (or -stdout)
     rm <key>                                    permanently remove "key"
 
+    info                                        review environment variables used
     verify                                      check encryption keys exist and work
     clear                                       remove all values
     version                                     print application version"
+
+`
+
+const GLOBAL_SSH_KEYGEN_USAGE = `The following will create a key/pair for encryption: 
+
+     ssh-keygen -m pem -f ~/.ssh/id_rsa_cryptic
+     ssh-keygen -f ~/.ssh/id_rsa_cryptic.pub -e -m pem > ~/.ssh/id_rsa_cryptic.pem
+     
+     export CRYPTIC_FILE=~/.Crypticfile
+     export CRYPTIC_PRIVATE_KEY=~/.ssh/id_rsa_cryptic
+     export CRYPTIC_PUBLIC_KEY=~/.ssh/id_rsa_cryptic.pem
 
 `

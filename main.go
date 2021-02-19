@@ -17,6 +17,8 @@ func main() {
 	command := cli.GetCommand()
 	if command == "help" {
 		DoUsage(cli)
+	} else if isInfo(command) {
+		DoInfo(cli)
 	} else if isVerify(command) {
 		DoVerify(cli, false)
 	} else if isVersion(command) {
@@ -44,6 +46,10 @@ func main() {
 
 func isVerify(command string) bool {
 	return command == "verify"
+}
+
+func isInfo(command string) bool {
+	return command == "info"
 }
 
 func isDelete(command string) bool {
@@ -157,6 +163,18 @@ func DoVerify(cli *goutils.CLI, failOnError bool) {
 	}
 
 	// fmt.Printf("%v =%v, exists=%v\n", CRYPTIC_ENCRYPTION_ENABLED, privateKeyExists)
+}
+
+func DoInfo(cli *goutils.CLI) {
+	filename := goutils.GetEnvOrDefault(CRYPTIC_FILE, "~/.Crypticfile")
+	pubKey := goutils.GetEnvOrDefault(CRYPTIC_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
+	privKey := goutils.GetEnvOrDefault(CRYPTIC_PRIVATE_KEY, "~/.ssh/id_rsa")
+
+	fmt.Printf("\n %v          : %v\n", CRYPTIC_FILE, filename)
+	fmt.Printf(" %v    : %v\n", CRYPTIC_PUBLIC_KEY, pubKey)
+	fmt.Printf(" %v   : %v\n\n", CRYPTIC_PRIVATE_KEY, privKey)
+
+	fmt.Printf("\n%v\n", GLOBAL_SSH_KEYGEN_USAGE)
 }
 
 func DoGet(cli *goutils.CLI) {
