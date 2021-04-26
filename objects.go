@@ -115,7 +115,9 @@ func (cdb *CrypticDB) Put(key string, value string, description string) {
 		encValue = cdb.Encrypt(value)
 	}
 	if exists {
-		entry.Value = encValue
+		if value != "" {
+			entry.Value = encValue
+		}
 		entry.LastUpdated = time.Now()
 		if description != "" {
 			entry.Description = description

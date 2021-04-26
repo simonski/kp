@@ -1,7 +1,7 @@
 package main
 
 // VERSION is the number of this beast
-const VERSION = "0.0.1"
+const VERSION = "0.0.2"
 
 // CRYPTIC_FILE the key for the env var pointint to the file we load/save
 const CRYPTIC_FILE = "CRYPTIC_FILE"
@@ -32,7 +32,7 @@ The commands are:
     info                                        review environment variables used
     verify                                      check encryption keys exist and work
     clear                                       remove all values
-    version                                     print application version"
+    version                                     print application version
 
 `
 

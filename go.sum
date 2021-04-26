@@ -12,10 +12,6 @@ github.com/shirou/gopsutil v3.20.12+incompatible h1:6VEGkOXP/eP4o2Ilk8cSsX0PhOEf
 github.com/shirou/gopsutil v3.20.12+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shirou/gopsutil v3.21.1+incompatible h1:2LwXWdbjXwyDgq26Yy/OT4xozlpmssQfy/rtfhWb0bY=
 github.com/shirou/gopsutil v3.21.1+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
-github.com/simonski/goutils v0.0.0-20210205141613-1fcfbc48cecc h1:4KRmv05Ygq8nUiKC3s9VHcHY5BLB017G6+je/ux5/DA=
-github.com/simonski/goutils v0.0.0-20210205141613-1fcfbc48cecc/go.mod h1:lG6E2mXftFVPYu8HSxI+QDpw4QrTkfzydoW2EgPCTDM=
-github.com/simonski/goutils v0.0.0-20210205143948-c4a669f6fb20 h1:mcAakSqBqBGmIsPS/6gTRccka1JWQg0NsSY8wgqB9S0=
-github.com/simonski/goutils v0.0.0-20210205143948-c4a669f6fb20/go.mod h1:lG6E2mXftFVPYu8HSxI+QDpw4QrTkfzydoW2EgPCTDM=
 github.com/simonski/goutils v0.0.0-20210205145330-ce4d1f600176 h1:9DtwRlyHGSQlOuKA6yDBqNixcS3VJTne9QBEXdMmkPY=
 github.com/simonski/goutils v0.0.0-20210205145330-ce4d1f600176/go.mod h1:lG6E2mXftFVPYu8HSxI+QDpw4QrTkfzydoW2EgPCTDM=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
