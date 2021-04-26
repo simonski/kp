@@ -38,11 +38,13 @@ The commands are:
 
 const GLOBAL_SSH_KEYGEN_USAGE = `The following will create a key/pair for encryption: 
 
-     ssh-keygen -m pem -f ~/.ssh/id_rsa_kp
-     ssh-keygen -f ~/.ssh/id_rsa_kp.pub -e -m pem > ~/.ssh/id_rsa_kp.pem
+     ssh-keygen -m pem -f ~/.ssh/id_rsa
+     ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem
+
+You can optionally use environment variables to override the defaults:
 
      export KP_FILE=~/.KPfile
-     export KP_PRIVATE_KEY=~/.ssh/id_rsa_kp
-     export KP_PUBLIC_KEY=~/.ssh/id_rsa_kp.pem
+     export KP_PUBLIC_KEY=~/.ssh/id_rsa.pem
+     export KP_PRIVATE_KEY=~/.ssh/id_rsa
 
 `

@@ -180,6 +180,7 @@ func DoInfo(cli *goutils.CLI) {
 	pubKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
 	privKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
 
+	fmt.Printf("\nKP is currently using the following values:\n")
 	fmt.Printf("\n %v          : %v\n", KP_FILE, filename)
 	fmt.Printf(" %v    : %v\n", KP_PUBLIC_KEY, pubKey)
 	fmt.Printf(" %v   : %v\n\n", KP_PRIVATE_KEY, privKey)
