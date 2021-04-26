@@ -11,8 +11,8 @@ import (
 	goutils "github.com/simonski/goutils"
 )
 
-// CrypticDB helper struct holds the data and keys
-type CrypticDB struct {
+// KPDB helper struct holds the data and keys
+type KPDB struct {
 	data               DB
 	Filename           string
 	PublicKeyFilename  string
@@ -34,15 +34,15 @@ type DBEntry struct {
 	Created     time.Time `json:"created"`
 }
 
-// NewCrypticDB constructor
-func NewCrypticDB(filename string, pubKey string, privKey string, encryptionEnabled bool) *CrypticDB {
-	cdb := CrypticDB{}
+// NewKPDB constructor
+func NewKPDB(filename string, pubKey string, privKey string, encryptionEnabled bool) *KPDB {
+	cdb := KPDB{}
 	cdb.Load(filename, pubKey, privKey, encryptionEnabled)
 	return &cdb
 }
 
 // Load populates the db with the file
-func (cdb *CrypticDB) Load(filename string, pubKey string, privKey string, encryptionEnabled bool) bool {
+func (cdb *KPDB) Load(filename string, pubKey string, privKey string, encryptionEnabled bool) bool {
 	cdb.Filename = goutils.EvaluateFilename(filename)
 	cdb.PublicKeyFilename = goutils.EvaluateFilename(pubKey)
 	cdb.PrivateKeyFilename = goutils.EvaluateFilename(privKey)
@@ -74,12 +74,12 @@ func (cdb *CrypticDB) Load(filename string, pubKey string, privKey string, encry
 }
 
 // Clear empties the db (without saving it)
-func (cdb *CrypticDB) Clear() {
+func (cdb *KPDB) Clear() {
 	cdb.data.Entries = make(map[string]DBEntry)
 }
 
 // Save writes the DB to disk
-func (cdb *CrypticDB) Save() bool {
+func (cdb *KPDB) Save() bool {
 	data := cdb.data.Entries
 	file, _ := json.MarshalIndent(data, "", " ")
 	err := ioutil.WriteFile(cdb.Filename, file, 0644)
@@ -90,12 +90,12 @@ func (cdb *CrypticDB) Save() bool {
 }
 
 // GetData returns the data map of all key
-func (cdb *CrypticDB) GetData() DB {
+func (cdb *KPDB) GetData() DB {
 	return cdb.data
 }
 
 // Get returns the (DBEntry, bool) indicating it exists (or not)
-func (cdb *CrypticDB) Get(key string) (DBEntry, bool) {
+func (cdb *KPDB) Get(key string) (DBEntry, bool) {
 	entry, exists := cdb.data.Entries[key]
 	if exists {
 		decValue := entry.Value
@@ -108,14 +108,16 @@ func (cdb *CrypticDB) Get(key string) (DBEntry, bool) {
 }
 
 // Put stores (or replaces) the key/value pair
-func (cdb *CrypticDB) Put(key string, value string, description string) {
+func (cdb *KPDB) Put(key string, value string, description string) {
 	entry, exists := cdb.data.Entries[key]
 	encValue := value
 	if cdb.EncryptionEnabled {
 		encValue = cdb.Encrypt(value)
 	}
 	if exists {
-		entry.Value = encValue
+		if value != "" {
+			entry.Value = encValue
+		}
 		entry.LastUpdated = time.Now()
 		if description != "" {
 			entry.Description = description
@@ -131,12 +133,12 @@ func (cdb *CrypticDB) Put(key string, value string, description string) {
 }
 
 // Delete removes the key/value pair from the DB
-func (cdb *CrypticDB) Delete(key string) {
+func (cdb *KPDB) Delete(key string) {
 	delete(cdb.data.Entries, key)
 }
 
 // Encrypt helper function encrypts with public key
-func (cdb *CrypticDB) Encrypt(value string) string {
+func (cdb *KPDB) Encrypt(value string) string {
 	publicKey := LoadPublicKey(cdb.PublicKeyFilename)
 	bytes := []byte(value)
 	encrypted := EncryptWithPublicKey(bytes, publicKey)
@@ -145,7 +147,7 @@ func (cdb *CrypticDB) Encrypt(value string) string {
 }
 
 // Decrypt helper function decrypts with private key
-func (cdb *CrypticDB) Decrypt(value string) string {
+func (cdb *KPDB) Decrypt(value string) string {
 	uDec, _ := b64.StdEncoding.DecodeString(value)
 	privateKey := LoadPrivateKey(cdb.PrivateKeyFilename)
 	bytes := []byte(uDec)

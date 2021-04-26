@@ -2,7 +2,7 @@ default_target: usage
 .PHONY : default_target upload
 
 usage:
-	@echo "The cryptic Makefile"
+	@echo "The kp Makefile"
 	@echo ""
 	@echo "Usage : make <command> "
 	@echo ""

@@ -23,4 +23,4 @@ jobs:
         goversion: "https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz"
         _project_path: "./cmd/test-binary"
         project_path: "."
-        binary_name: "cryptic"
+        binary_name: "kp"

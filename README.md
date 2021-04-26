@@ -1,4 +1,4 @@
-# Cryptic
+# KP
 
 A terminal tool to manage key/pairs. I use it to manage *temporary* passwords on *controlled* hardware.
 
@@ -6,21 +6,20 @@ A terminal tool to manage key/pairs. I use it to manage *temporary* passwords on
 
 Install via `go get`
 
-	go get github.com/simonski/cryptic
+	go get github.com/simonski/kp
 
-This will install `cryptic` onto your `$GOBIN`. Please ensure `$GOBIN` is on your `$PATH`.
+This will install `kp` onto your `$GOBIN`. Please ensure `$GOBIN` is on your `$PATH`.
 
-## Usage
+## Setup
 
-`cryptic` stores keypairs to a `~/.Crypticfile`
+Once you've installed kp and can type `kp version`, you will need to configure kp.
 
-The file itself is plaintext, the values of the keys are *encrypted* using your public key.
+	kp verify
 
-## Verify Setup
+`kp` stores keypairs to a `~/.KPfile`
 
-(Optional) this step will verify your installation, environment variables, file locations and encryption keys. You don't *have* to do this as the defaults *should* work on modern mac, Windows and Linux variants.
+The file itself is plaintext, the values of the keys are *encrypted*.
 
-	cryptic verify
 
 You may need to create your encryption keys
 
@@ -30,26 +29,26 @@ Create a pem readable public key
 
 	ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem
 
-Finally, confirm cryptic is setup properly:
+Finally, confirm kp is setup properly:
 
-	cryptic verify
+	kp verify
 
-Assuming you get a "Verification Success" message, you can then use `cryptic` in the following manner - if you don't, it will explain what needs changing in the `verify` command itself.
+Assuming you get a "Verification Success" message, you can then use `kp` in the following manner - if you don't, it will explain what needs changing in the `verify` command itself.
 
 ## Store a key
 
 Store a key/value
 
-	cryptic put <keyname> [-m message]
+	kp put <keyname> [-m message]
 	>> STDIN value
 
 Retrieve the value of a key to your clipboard
 
-	cryptic get <keyname>
+	kp get <keyname>
 
 List all keys
 
-	cryptic ls
+	kp ls
 
 Remove a key
 
@@ -57,11 +56,11 @@ Remove a key
 
 Remove all keys
 
-	cryptic clear
+	kp clear
 
 Get help on any command:
 
-	cryptic
+	kp
 
 # Environment variables
 
@@ -69,9 +68,9 @@ You can optionally override settings such as encryption, location of files by se
 
 |name|dedscription|default value|
 -----|------------|-------------|
-`$CRYPTIC_FILE`|The file keypairs are stored|`~/.Crypticfile`
-`$CRYPTIC_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
-`$CRYPTIC_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
+`$KP_FILE`|The file keypairs are stored|`~/.KPfile`
+`$KP_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
+`$KP_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
 
 # Releases
 
