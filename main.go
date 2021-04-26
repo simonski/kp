@@ -40,8 +40,8 @@ func main() {
 	} else if isDelete(command) {
 		DoDelete(cli)
 	} else if command != "" {
-		fmt.Printf("cryptic %v: unknown command\n", command)
-		fmt.Printf("Run 'cryptic help' for usage.\n")
+		fmt.Printf("kp %v: unknown command\n", command)
+		fmt.Printf("Run 'kp help' for usage.\n")
 		os.Exit(1)
 	} else {
 		DoUsage(cli)
@@ -81,39 +81,39 @@ func isPut(command string, cli *goutils.CLI) bool {
 	return command == "put"
 }
 
-func LoadDB() *CrypticDB {
-	filename := goutils.GetEnvOrDefault(CRYPTIC_FILE, "~/.Crypticfile")
-	pubKey := goutils.GetEnvOrDefault(CRYPTIC_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
-	privKey := goutils.GetEnvOrDefault(CRYPTIC_PRIVATE_KEY, "~/.ssh/id_rsa")
-	encryptionEnabled := goutils.GetEnvOrDefault(CRYPTIC_ENCRYPTION_ENABLED, "1") == "1"
-	db := NewCrypticDB(filename, pubKey, privKey, encryptionEnabled)
+func LoadDB() *KPDB {
+	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.KPfile")
+	pubKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
+	privKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
+	encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION_ENABLED, "1") == "1"
+	db := NewKPDB(filename, pubKey, privKey, encryptionEnabled)
 	return db
 }
 
-// DoVerify performs verification of ~/.Crypticfile, encryption/decryption using
+// DoVerify performs verification of ~/.KPfile, encryption/decryption using
 // specified keys
 func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 	overallValid := true
-	filename := goutils.GetEnvOrDefault(CRYPTIC_FILE, "~/.Crypticfile")
-	publicKey := goutils.GetEnvOrDefault(CRYPTIC_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
-	privateKey := goutils.GetEnvOrDefault(CRYPTIC_PRIVATE_KEY, "~/.ssh/id_rsa")
+	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.KPfile")
+	publicKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
+	privateKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
 
 	// filenameExists := goutils.FileExists(goutils.EvaluateFilename(filename))
 	publicKeyExists := goutils.FileExists(goutils.EvaluateFilename(publicKey))
 	privateKeyExists := goutils.FileExists(goutils.EvaluateFilename(privateKey))
 
 	messages := make([]string, 0)
-	messages = append(messages, fmt.Sprintf("%v          %v\n", CRYPTIC_FILE, filename))
-	messages = append(messages, fmt.Sprintf("%v    %v\n", CRYPTIC_PUBLIC_KEY, publicKey))
-	messages = append(messages, fmt.Sprintf("%v   %v\n", CRYPTIC_PRIVATE_KEY, privateKey))
+	messages = append(messages, fmt.Sprintf("%v          %v\n", KP_FILE, filename))
+	messages = append(messages, fmt.Sprintf("%v    %v\n", KP_PUBLIC_KEY, publicKey))
+	messages = append(messages, fmt.Sprintf("%v   %v\n", KP_PRIVATE_KEY, privateKey))
 
 	// overallValid = filenameExists && publicKeyExists && privateKeyExists
 	// if !filenameExists {
-	// 	line := fmt.Sprintf("Crypticfile '%v' does not exist.\n", filename)
+	// 	line := fmt.Sprintf("KPfile '%v' does not exist.\n", filename)
 	// 	messages = append(messages, line)
 	// 	overallValid = false
 	// } else {
-	// 	// line := fmt.Sprintf("Crypticfile '%v' exists.\n", filename)
+	// 	// line := fmt.Sprintf("KPfile '%v' exists.\n", filename)
 	// 	// messages = append(messages, line)
 	// }
 
@@ -165,24 +165,24 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 
 	if overallValid {
 		if printFailuresToStdOut {
-			fmt.Printf("cryptic verify : OK.\n")
+			fmt.Printf("kp verify : OK.\n")
 		}
 	} else {
-		// fmt.Printf("cryptic verify: NOT OK.\n")
+		// fmt.Printf("kp verify: NOT OK.\n")
 	}
 
 	return overallValid
-	// fmt.Printf("%v =%v, exists=%v\n", CRYPTIC_ENCRYPTION_ENABLED, privateKeyExists)
+	// fmt.Printf("%v =%v, exists=%v\n", KP_ENCRYPTION_ENABLED, privateKeyExists)
 }
 
 func DoInfo(cli *goutils.CLI) {
-	filename := goutils.GetEnvOrDefault(CRYPTIC_FILE, "~/.Crypticfile")
-	pubKey := goutils.GetEnvOrDefault(CRYPTIC_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
-	privKey := goutils.GetEnvOrDefault(CRYPTIC_PRIVATE_KEY, "~/.ssh/id_rsa")
+	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.KPfile")
+	pubKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
+	privKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
 
-	fmt.Printf("\n %v          : %v\n", CRYPTIC_FILE, filename)
-	fmt.Printf(" %v    : %v\n", CRYPTIC_PUBLIC_KEY, pubKey)
-	fmt.Printf(" %v   : %v\n\n", CRYPTIC_PRIVATE_KEY, privKey)
+	fmt.Printf("\n %v          : %v\n", KP_FILE, filename)
+	fmt.Printf(" %v    : %v\n", KP_PUBLIC_KEY, pubKey)
+	fmt.Printf(" %v   : %v\n\n", KP_PRIVATE_KEY, privKey)
 
 	fmt.Printf("\n%v\n", GLOBAL_SSH_KEYGEN_USAGE)
 }
@@ -310,7 +310,7 @@ func DoDelete(cli *goutils.CLI) {
 	command := cli.GetCommand()
 	key := cli.GetStringOrDefault(command, "")
 	if key == "" {
-		USAGE := "cryptic rm [key]"
+		USAGE := "kp rm [key]"
 		fmt.Printf("%v\n", USAGE)
 	}
 	db := LoadDB()

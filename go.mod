@@ -1,4 +1,4 @@
-module github.com/simonski/cryptic
+module github.com/simonski/kp
 
 go 1.15
 
