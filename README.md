@@ -67,7 +67,7 @@ You can optionally override settings such as encryption, location of files by se
 
 |name|dedscription|default value|
 -----|------------|-------------|
-`$KP_ENCRYPTION`|1 or 0, indicates if encrytion is used.|`~/.KPfile`
+`$KP_ENCRYPTION`|1 or 0, indicates if encrytion is used.|0
 `$KP_FILE`|The file keypairs are stored|`~/.kpfile`
 `$KP_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
 `$KP_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
