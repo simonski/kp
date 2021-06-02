@@ -86,7 +86,6 @@ func LoadDB() *KPDB {
 	pubKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
 	privKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
 	encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION, "0") == "1"
-	fmt.Printf("Encryption Enabled is %v\n", encryptionEnabled)
 	db := NewKPDB(filename, pubKey, privKey, encryptionEnabled)
 	return db
 }
@@ -108,32 +107,16 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 	messages = append(messages, fmt.Sprintf("%v    %v\n", KP_PUBLIC_KEY, publicKey))
 	messages = append(messages, fmt.Sprintf("%v   %v\n", KP_PRIVATE_KEY, privateKey))
 
-	// overallValid = filenameExists && publicKeyExists && privateKeyExists
-	// if !filenameExists {
-	// 	line := fmt.Sprintf("KPfile '%v' does not exist.\n", filename)
-	// 	messages = append(messages, line)
-	// 	overallValid = false
-	// } else {
-	// 	// line := fmt.Sprintf("KPfile '%v' exists.\n", filename)
-	// 	// messages = append(messages, line)
-	// }
-
 	if !publicKeyExists {
 		line := fmt.Sprintf("Public key '%v' does not exist.\n", publicKey)
 		messages = append(messages, line)
 		overallValid = false
-	} else {
-		// line := fmt.Sprintf("Public key '%v' exists.\n", publicKey)
-		// messages = append(messages, line)
 	}
 
 	if !privateKeyExists {
 		line := fmt.Sprintf("Private key '%v' does not exist.\n", privateKey)
 		messages = append(messages, line)
 		overallValid = false
-	} else {
-		// line := fmt.Sprintf("Private key '%v' exists.\n", privateKey)
-		// messages = append(messages, line)
 	}
 
 	if publicKeyExists && privateKeyExists {
@@ -141,26 +124,23 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 		plain := "Hello, World"
 		encrypted := Encrypt(plain, publicKey)
 		decrypted := Decrypt(encrypted, privateKey)
-		if plain == decrypted {
-			// line := fmt.Sprintf("Encrypt/Decrypt works.\n")
-			// messages = append(messages, line)
-		} else {
-			line := fmt.Sprintf("Encrypt/Decrypt not working.\n")
+		if plain != decrypted {
+			line := "Encrypt/Decrypt not working.\n"
 			messages = append(messages, line)
 			overallValid = false
 		}
 
 	} else {
 		messages = append(messages, "\n\nPublic/private keys do not exist, try the following\n\n")
-		line := fmt.Sprintf("    ssh-keygen -m pem -f ~/.ssh/id_rsa\n")
+		line := "    ssh-keygen -m pem -f ~/.ssh/id_rsa\n"
 		messages = append(messages, line)
-		line = fmt.Sprintf("    ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem\n\n")
+		line = "    ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem\n\n"
 		messages = append(messages, line)
 	}
 
 	if printFailuresToStdOut {
 		for _, line := range messages {
-			fmt.Printf(line)
+			fmt.Print(line)
 		}
 	}
 
