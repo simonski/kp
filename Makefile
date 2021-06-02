@@ -11,7 +11,6 @@ usage:
 	@echo "  clean                 - cleans temp files"
 	@echo "  test                  - builds and runs tests"
 	@echo "  build                 - creates binary"
-	@echo "  run                   - runs in go run"
 	@echo "  install               - builds and installs"
 	@echo "  release               - creates the crossplatorm releases"
 	@echo ""
@@ -33,12 +32,13 @@ test:
 install:
 	go install
 
-run: 
-	go run main.go $*
-
-all: clean build test
+all: clean build test install release 
 	go install
 
 release:
 	goreleaser --snapshot --skip-publish --rm-dist
+
+docker: build
+	GOOS=linux GOARCH=amd64 go build -o kp_linux
+	docker build -t kp .
 

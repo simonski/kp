@@ -1,6 +1,6 @@
 # KP
 
-A terminal tool to manage key/pairs. I use it to manage *temporary* passwords on *controlled* hardware.
+A terminal tool to manage key/pairs. I use it to manage *temporary* key/pairs on *controlled* hardware.
 
 ## Install
 
@@ -16,12 +16,11 @@ Once you've installed kp and can type `kp version`, you will need to configure k
 
 	kp verify
 
-`kp` stores keypairs to a `~/.KPfile`
+By default, `kp` stores keypairs to a `~/.kpfile`
 
-The file itself is plaintext, the values of the keys are *encrypted*.
+The file itself is plaintext, the values of the keys are *encrypted* if `KP_ENCRYTION=1`
 
-
-You may need to create your encryption keys
+If you want to encrypt your data, create your encryption keys
 
 	ssh-keygen
 
@@ -68,7 +67,8 @@ You can optionally override settings such as encryption, location of files by se
 
 |name|dedscription|default value|
 -----|------------|-------------|
-`$KP_FILE`|The file keypairs are stored|`~/.KPfile`
+`$KP_ENCRYPTION`|1 or 0, indicates if encrytion is used.|`~/.KPfile`
+`$KP_FILE`|The file keypairs are stored|`~/.kpfile`
 `$KP_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
 `$KP_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
 

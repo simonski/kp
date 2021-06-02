@@ -1,13 +1,13 @@
 package main
 
 // VERSION is the number of this beast
-const VERSION = "0.0.3-develop"
+const VERSION = "0.0.4"
 
 // KP_FILE the key for the env var pointint to the file we load/save
 const KP_FILE = "KP_FILE"
 
 // KP_ENCRYPTION_ENABLED the key to the public key
-const KP_ENCRYPTION_ENABLED = "KP_ENCRYPTION_ENABLED"
+const KP_ENCRYPTION = "KP_ENCRYPTION"
 
 // KP_PUBLIC_KEY the key to the public key
 const KP_PUBLIC_KEY = "KP_PUBLIC_KEY"
@@ -43,7 +43,7 @@ const GLOBAL_SSH_KEYGEN_USAGE = `The following will create a key/pair for encryp
 
 You can optionally use environment variables to override the defaults:
 
-     export KP_FILE=~/.KPfile
+     export KP_FILE=~/.kpfile
      export KP_PUBLIC_KEY=~/.ssh/id_rsa.pem
      export KP_PRIVATE_KEY=~/.ssh/id_rsa
 

@@ -82,10 +82,11 @@ func isPut(command string, cli *goutils.CLI) bool {
 }
 
 func LoadDB() *KPDB {
-	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.KPfile")
+	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.kpfile")
 	pubKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
 	privKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
-	encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION_ENABLED, "1") == "1"
+	encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION, "0") == "1"
+	fmt.Printf("Encryption Enabled is %v\n", encryptionEnabled)
 	db := NewKPDB(filename, pubKey, privKey, encryptionEnabled)
 	return db
 }
@@ -94,7 +95,7 @@ func LoadDB() *KPDB {
 // specified keys
 func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 	overallValid := true
-	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.KPfile")
+	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.kpfile")
 	publicKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
 	privateKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
 
@@ -150,7 +151,7 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 		}
 
 	} else {
-		messages = append(messages, "\nPublic/private keys do not exist, try the following\n\n")
+		messages = append(messages, "\n\nPublic/private keys do not exist, try the following\n\n")
 		line := fmt.Sprintf("    ssh-keygen -m pem -f ~/.ssh/id_rsa\n")
 		messages = append(messages, line)
 		line = fmt.Sprintf("    ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem\n\n")
@@ -176,14 +177,14 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 }
 
 func DoInfo(cli *goutils.CLI) {
-	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.KPfile")
+	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.kpfile")
 	pubKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
 	privKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
 
 	fmt.Printf("\nKP is currently using the following values:\n")
-	fmt.Printf("\n %v          : %v\n", KP_FILE, filename)
-	fmt.Printf(" %v    : %v\n", KP_PUBLIC_KEY, pubKey)
-	fmt.Printf(" %v   : %v\n\n", KP_PRIVATE_KEY, privKey)
+	fmt.Printf("\n%v          : %v\n", KP_FILE, filename)
+	fmt.Printf("%v    : %v\n", KP_PUBLIC_KEY, pubKey)
+	fmt.Printf("%v   : %v\n\n", KP_PRIVATE_KEY, privKey)
 
 	fmt.Printf("\n%v\n", GLOBAL_SSH_KEYGEN_USAGE)
 }
@@ -195,7 +196,10 @@ func DoGet(cli *goutils.CLI) {
 	entry, exists := db.Get(key)
 	if exists {
 		value := entry.Value
-		clipboard.WriteAll(value)
+		err := clipboard.WriteAll(value)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
 		if cli.IndexOf("-stdout") > -1 {
 			fmt.Printf("%v\n", value)
 		}
@@ -211,6 +215,9 @@ func DoPut(cli *goutils.CLI) {
 	key := cli.GetStringOrDie(command)
 	if len(key) > 25 {
 		fmt.Printf("Error, key must be <= 25 characters.\n")
+		os.Exit(1)
+	} else if len(key) == 0 {
+		fmt.Printf("Error, key cannot be empty.")
 		os.Exit(1)
 	}
 	description := cli.GetStringOrDefault("-d", "")
