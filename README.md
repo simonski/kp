@@ -2,6 +2,10 @@
 
 A terminal tool to manage key/pairs. I use it to manage *temporary* key/pairs on *controlled* hardware.
 
+## Version
+
+0.0.5
+
 ## Install
 
 Install via `go get`
