@@ -1,4 +1,4 @@
-name: Go
+name: GoNotWorking
 
 # https://dev.to/koddr/github-action-for-release-your-go-projects-as-fast-and-easily-as-possible-20a2
 on:
