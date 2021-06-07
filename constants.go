@@ -1,7 +1,7 @@
 package main
 
 // VERSION is the number of this beast
-const VERSION = "0.0.4"
+const VERSION = "0.0.5"
 
 // KP_FILE the key for the env var pointint to the file we load/save
 const KP_FILE = "KP_FILE"

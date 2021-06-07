@@ -28,12 +28,20 @@ func main() {
 	} else if isList(command) {
 		DoList(cli)
 	} else if isPut(command, cli) {
-		ok := DoVerify(cli, false)
+		encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION, "0") == "1"
+		ok := true
+		if encryptionEnabled {
+			ok = DoVerify(cli, false)
+		}
 		if ok {
 			DoPut(cli)
 		}
 	} else if isGet(command, cli) {
-		ok := DoVerify(cli, false)
+		encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION, "0") == "1"
+		ok := true
+		if encryptionEnabled {
+			ok = DoVerify(cli, false)
+		}
 		if ok {
 			DoGet(cli)
 		}
