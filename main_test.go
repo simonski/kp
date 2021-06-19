@@ -9,7 +9,6 @@ import (
 )
 
 func main_test(t *testing.T) {
-	fmt.Printf("OK")
 
 	command := "fooo"
 	cli := goutils.NewCLI(os.Args)

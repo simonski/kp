@@ -14,6 +14,7 @@ The road to 1.0 is finishing the TODO list.  Top of this page is the DOING secti
 Before I can release on @master and @1.0.0 I need to
 
 - review the README/create a USER_GUIDE ./kp help
+- attempt to format the STDOUT based on $COLUMNS or tput if possible?
 - review unit tests/coverage
 - setup dependency on goutils as formal - version goutils as github.com/simonski/goutils@1.0.0
 - verify initial setup - mac

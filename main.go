@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"sort"
 	"strings"
 	"syscall"
@@ -10,10 +11,13 @@ import (
 	clipboard "github.com/atotto/clipboard"
 	goutils "github.com/simonski/goutils"
 	terminal "golang.org/x/crypto/ssh/terminal"
+
+	figure "github.com/common-nighthawk/go-figure"
 )
 
 func main() {
 	cli := goutils.NewCLI(os.Args)
+	DoLogo()
 	command := cli.GetCommand()
 	if command == "help" {
 		DoUsage(cli)
@@ -164,7 +168,13 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 	// fmt.Printf("%v =%v, exists=%v\n", KP_ENCRYPTION_ENABLED, privateKeyExists)
 }
 
+func DoLogo() {
+	f := figure.NewColorFigure("kp", "", "blue", true)
+	f.Print()
+}
+
 func DoInfo(cli *goutils.CLI) {
+
 	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.kpfile")
 	pubKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
 	privKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
@@ -175,6 +185,24 @@ func DoInfo(cli *goutils.CLI) {
 	fmt.Printf("%v   : %v\n\n", KP_PRIVATE_KEY, privKey)
 
 	fmt.Printf("\n%v\n", GLOBAL_SSH_KEYGEN_USAGE)
+
+	t := NewTerminal()
+
+	sysInfo := goutils.NewSysInfo()
+
+	fmt.Printf("RAM         : %v\n", sysInfo.RAM)
+	fmt.Printf("CPU         : %v\n", sysInfo.CPU)
+	fmt.Printf("Cores	    : %v\n", runtime.NumCPU())
+	fmt.Printf("Disk        : %v\n", sysInfo.Disk)
+	fmt.Printf("Hostname    : %v\n", sysInfo.Hostname)
+	fmt.Printf("GOOS        : %v\n", runtime.GOOS)
+	fmt.Printf("GOARCH      : %v\n", runtime.GOARCH)
+	fmt.Printf("GOMAXPROC   : %v\n", runtime.GOMAXPROCS)
+	fmt.Printf("Columns     : %v\n", t.Width())
+	fmt.Printf("IsMacOS     : %v\n", sysInfo.IsMacOS())
+	fmt.Printf("IsLinux     : %v\n", sysInfo.IsLinux())
+	fmt.Printf("IsWindows   : %v\n", sysInfo.IsWindows())
+
 }
 
 func DoGet(cli *goutils.CLI) {
