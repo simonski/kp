@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime"
 	"sort"
 	"strings"
 	"syscall"
@@ -17,20 +16,22 @@ import (
 
 func main() {
 	cli := goutils.NewCLI(os.Args)
-	DoLogo()
 	command := cli.GetCommand()
 	if command == "help" {
+		DoLogo()
 		DoUsage(cli)
 	} else if isInfo(command) {
 		DoInfo(cli)
 	} else if isVerify(command) {
 		DoVerify(cli, true)
+	} else if isList(command) {
+		DoList(cli)
 	} else if isVersion(command) {
 		DoVersion(cli)
 	} else if isClear(command) {
 		DoClear(cli)
-	} else if isList(command) {
-		DoList(cli)
+	} else if isDescribe(command) {
+		DoDescribe(cli)
 	} else if isPut(command, cli) {
 		encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION, "0") == "1"
 		ok := true
@@ -56,6 +57,7 @@ func main() {
 		fmt.Printf("Run 'kp help' for usage.\n")
 		os.Exit(1)
 	} else {
+		DoLogo()
 		DoUsage(cli)
 	}
 }
@@ -84,6 +86,10 @@ func isClear(command string) bool {
 	return command == "clear"
 }
 
+func isDescribe(command string) bool {
+	return command == "describe"
+}
+
 // A 'get' is basically not a a list, delete or a put
 func isGet(command string, cli *goutils.CLI) bool {
 	return command == "get"
@@ -107,53 +113,58 @@ func LoadDB() *KPDB {
 func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 	overallValid := true
 	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.kpfile")
-	publicKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
-	privateKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
+	encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION, "0") == "1"
 
-	// filenameExists := goutils.FileExists(goutils.EvaluateFilename(filename))
-	publicKeyExists := goutils.FileExists(goutils.EvaluateFilename(publicKey))
-	privateKeyExists := goutils.FileExists(goutils.EvaluateFilename(privateKey))
+	if encryptionEnabled {
+		publicKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
+		privateKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
 
-	messages := make([]string, 0)
-	messages = append(messages, fmt.Sprintf("%v          %v\n", KP_FILE, filename))
-	messages = append(messages, fmt.Sprintf("%v    %v\n", KP_PUBLIC_KEY, publicKey))
-	messages = append(messages, fmt.Sprintf("%v   %v\n", KP_PRIVATE_KEY, privateKey))
+		// filenameExists := goutils.FileExists(goutils.EvaluateFilename(filename))
+		publicKeyExists := goutils.FileExists(goutils.EvaluateFilename(publicKey))
+		privateKeyExists := goutils.FileExists(goutils.EvaluateFilename(privateKey))
 
-	if !publicKeyExists {
-		line := fmt.Sprintf("Public key '%v' does not exist.\n", publicKey)
-		messages = append(messages, line)
-		overallValid = false
-	}
+		messages := make([]string, 0)
+		messages = append(messages, fmt.Sprintf("%v          %v\n", KP_FILE, filename))
+		messages = append(messages, fmt.Sprintf("%v    %v\n", KP_PUBLIC_KEY, publicKey))
+		messages = append(messages, fmt.Sprintf("%v   %v\n", KP_PRIVATE_KEY, privateKey))
 
-	if !privateKeyExists {
-		line := fmt.Sprintf("Private key '%v' does not exist.\n", privateKey)
-		messages = append(messages, line)
-		overallValid = false
-	}
-
-	if publicKeyExists && privateKeyExists {
-		// try to encrypt/decrypt something
-		plain := "Hello, World"
-		encrypted := Encrypt(plain, publicKey)
-		decrypted := Decrypt(encrypted, privateKey)
-		if plain != decrypted {
-			line := "Encrypt/Decrypt not working.\n"
+		if !publicKeyExists {
+			line := fmt.Sprintf("Public key '%v' does not exist.\n", publicKey)
 			messages = append(messages, line)
 			overallValid = false
 		}
 
-	} else {
-		messages = append(messages, "\n\nPublic/private keys do not exist, try the following\n\n")
-		line := "    ssh-keygen -m pem -f ~/.ssh/id_rsa\n"
-		messages = append(messages, line)
-		line = "    ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem\n\n"
-		messages = append(messages, line)
-	}
-
-	if printFailuresToStdOut {
-		for _, line := range messages {
-			fmt.Print(line)
+		if !privateKeyExists {
+			line := fmt.Sprintf("Private key '%v' does not exist.\n", privateKey)
+			messages = append(messages, line)
+			overallValid = false
 		}
+
+		if publicKeyExists && privateKeyExists {
+			// try to encrypt/decrypt something
+			plain := "Hello, World"
+			encrypted := Encrypt(plain, publicKey)
+			decrypted := Decrypt(encrypted, privateKey)
+			if plain != decrypted {
+				line := "Encrypt/Decrypt not working.\n"
+				messages = append(messages, line)
+				overallValid = false
+			}
+
+		} else {
+			messages = append(messages, "\nPublic/private keys do not exist, try the following\n\n")
+			line := "    ssh-keygen -m pem -f ~/.ssh/id_rsa\n"
+			messages = append(messages, line)
+			line = "    ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem\n\n"
+			messages = append(messages, line)
+		}
+
+		if printFailuresToStdOut {
+			for _, line := range messages {
+				fmt.Print(line)
+			}
+		}
+
 	}
 
 	if overallValid {
@@ -178,30 +189,32 @@ func DoInfo(cli *goutils.CLI) {
 	filename := goutils.GetEnvOrDefault(KP_FILE, "~/.kpfile")
 	pubKey := goutils.GetEnvOrDefault(KP_PUBLIC_KEY, "~/.ssh/id_rsa.pem")
 	privKey := goutils.GetEnvOrDefault(KP_PRIVATE_KEY, "~/.ssh/id_rsa")
+	encryptionEnabled := goutils.GetEnvOrDefault(KP_ENCRYPTION, "0")
 
 	fmt.Printf("\nKP is currently using the following values:\n")
 	fmt.Printf("\n%v          : %v\n", KP_FILE, filename)
+	fmt.Printf("%v    : %v\n", KP_ENCRYPTION, encryptionEnabled)
 	fmt.Printf("%v    : %v\n", KP_PUBLIC_KEY, pubKey)
 	fmt.Printf("%v   : %v\n\n", KP_PRIVATE_KEY, privKey)
 
 	fmt.Printf("\n%v\n", GLOBAL_SSH_KEYGEN_USAGE)
 
-	t := NewTerminal()
+	// t := NewTerminal()
 
-	sysInfo := goutils.NewSysInfo()
+	// sysInfo := goutils.NewSysInfo()
 
-	fmt.Printf("RAM         : %v\n", sysInfo.RAM)
-	fmt.Printf("CPU         : %v\n", sysInfo.CPU)
-	fmt.Printf("Cores	    : %v\n", runtime.NumCPU())
-	fmt.Printf("Disk        : %v\n", sysInfo.Disk)
-	fmt.Printf("Hostname    : %v\n", sysInfo.Hostname)
-	fmt.Printf("GOOS        : %v\n", runtime.GOOS)
-	fmt.Printf("GOARCH      : %v\n", runtime.GOARCH)
-	fmt.Printf("GOMAXPROC   : %v\n", runtime.GOMAXPROCS)
-	fmt.Printf("Columns     : %v\n", t.Width())
-	fmt.Printf("IsMacOS     : %v\n", sysInfo.IsMacOS())
-	fmt.Printf("IsLinux     : %v\n", sysInfo.IsLinux())
-	fmt.Printf("IsWindows   : %v\n", sysInfo.IsWindows())
+	// fmt.Printf("RAM         : %v\n", sysInfo.RAM)
+	// fmt.Printf("CPU         : %v\n", sysInfo.CPU)
+	// fmt.Printf("Cores	    : %v\n", runtime.NumCPU())
+	// fmt.Printf("Disk        : %v\n", sysInfo.Disk)
+	// fmt.Printf("Hostname    : %v\n", sysInfo.Hostname)
+	// fmt.Printf("GOOS        : %v\n", runtime.GOOS)
+	// fmt.Printf("GOARCH      : %v\n", runtime.GOARCH)
+	// fmt.Printf("GOMAXPROC   : %v\n", runtime.GOMAXPROCS)
+	// fmt.Printf("Columns     : %v\n", t.Width())
+	// fmt.Printf("IsMacOS     : %v\n", sysInfo.IsMacOS())
+	// fmt.Printf("IsLinux     : %v\n", sysInfo.IsLinux())
+	// fmt.Printf("IsWindows   : %v\n", sysInfo.IsWindows())
 
 }
 
@@ -250,6 +263,16 @@ func DoPut(cli *goutils.CLI) {
 	}
 	value := password
 	db.Put(key, value, description)
+	db.Save()
+}
+
+func DoDescribe(cli *goutils.CLI) {
+	db := LoadDB()
+	command := cli.GetCommand()
+	key := cli.GetStringOrDie(command)
+	description := cli.GetStringOrDie(key)
+	value, _ := db.Get(key)
+	db.Put(key, value.Value, description)
 	db.Save()
 }
 

@@ -5,8 +5,14 @@ The road to 1.0 is finishing the TODO list.  Top of this page is the DOING secti
 
 ## DOING
 
+branch: features/prep_v1
+
+- DONE: basics of encryption work. 
+- Improve error handling and information.
 - "init", "verify", "setup" steps to be described and completed
+- "info" is almost pointless
 - `kp verify` ssh public key verification/generation
+
 - investigate overall binary size (5MB - can it be smaller?)
 
 ## TODO

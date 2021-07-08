@@ -2,10 +2,6 @@
 
 A terminal tool to manage key/pairs. I use it to manage *temporary* key/pairs on *controlled* hardware.
 
-## Version
-
-0.0.5
-
 ## Install
 
 Install via `go get`
@@ -20,17 +16,27 @@ Once you've installed kp and can type `kp version`, you will need to configure k
 
 	kp verify
 
-By default, `kp` stores keypairs to a `~/.kpfile`
+By default, `kp` stores keypairs to a `~/.kpfile`.  This can be controlled with the environment variable `KP_FILE`
 
-The file itself is plaintext, the values of the keys are *encrypted* if `KP_ENCRYTION=1`
+## Encryption
+
+The `~/.kpfile` itself is plaintext, the values of the keys can be encrypted if the environment variable `KP_ENCRYTION=1`.
+
+By default, encryption is OFF.  The following environment variables are used to control 
+
+|name|purpose|default value|
+|----|-------|-------------|
+`KP_ENCRYPTION`|Switches encryption on of off|`0`
+`KP_PUBLIC_KEY`|Flename of .pem encoded public key|`~/.ssh/kp_id_rsa.pem`
+`KP_PRIVATE_KEY`|Flename of private key|`~/.ssh/kp_id_rsa`
 
 If you want to encrypt your data, create your encryption keys
 
-	ssh-keygen
+	ssh-keygen -f ~/.ssh/kp_id_rsa
 
 Create a pem readable public key
 
-	ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem
+	ssh-keygen -f ~/.ssh/kp_id_rsa.pub -e -m pem > ~/.ssh/kp_id_rsa.pem
 
 Finally, confirm kp is setup properly:
 
@@ -56,6 +62,10 @@ List all keys
 Remove a key
 
 	crpytic rm <keyname>
+
+Descrive a key
+
+	crpytic describe key "description"
 
 Remove all keys
 
