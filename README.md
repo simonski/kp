@@ -2,6 +2,8 @@
 
 A terminal tool to manage key/pairs. I use it to manage *temporary* key/pairs on *controlled* hardware.
 
+This is OSS - if you want to contribute please read the [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md).
+
 ## Install
 
 Install via `go get`
