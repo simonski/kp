@@ -8,6 +8,7 @@ import (
 	"time"
 
 	goutils "github.com/simonski/goutils"
+	crypto "github.com/simonski/goutils/crypto"
 )
 
 // KPDB helper struct holds the data and keys
@@ -139,12 +140,12 @@ func (cdb *KPDB) Delete(key string) {
 
 // Encrypt helper function encrypts with public key
 func (cdb *KPDB) Encrypt(value string) string {
-	encrypted, _ := EncryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
+	encrypted, _ := crypto.EncryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
 	return encrypted
 }
 
 // Decrypt helper function decrypts with private key
 func (cdb *KPDB) Decrypt(value string) string {
-	decrypted, _ := DecryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
+	decrypted, _ := crypto.DecryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
 	return decrypted
 }

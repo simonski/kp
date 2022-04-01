@@ -10,6 +10,7 @@ import (
 	clipboard "github.com/atotto/clipboard"
 	figure "github.com/common-nighthawk/go-figure"
 	goutils "github.com/simonski/goutils"
+	crypto "github.com/simonski/goutils/crypto"
 	terminal "golang.org/x/term"
 )
 
@@ -124,7 +125,7 @@ func DoEncrypt(cli *goutils.CLI) {
 	privateKey := goutils.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
 	command := cli.GetCommand()
 	value := cli.GetStringOrDie(command)
-	result, _ := Encrypt(value, privateKey)
+	result, _ := crypto.Encrypt(value, privateKey)
 	fmt.Println(result)
 }
 
@@ -132,7 +133,7 @@ func DoDecrypt(cli *goutils.CLI) {
 	privateKey := goutils.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
 	command := cli.GetCommand()
 	value := cli.GetStringOrDie(command)
-	result, _ := Decrypt(value, privateKey)
+	result, _ := crypto.Decrypt(value, privateKey)
 	fmt.Println(result)
 }
 
@@ -172,8 +173,8 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 	if overallValid {
 		// try to encrypt/decrypt something
 		plain := "Hello, World"
-		encrypted, _ := Encrypt(plain, privateKeyFilename)
-		decrypted, _ := Decrypt(encrypted, privateKeyFilename)
+		encrypted, _ := crypto.Encrypt(plain, privateKeyFilename)
+		decrypted, _ := crypto.Decrypt(encrypted, privateKeyFilename)
 		if plain != decrypted {
 			line := "Encrypt/Decrypt not working.\n"
 			messages = append(messages, line)
