@@ -4,7 +4,15 @@
 
 To build locally
 
-	make build
+```bash
+make
+```
+
+To see the help targets
+
+```bash
+make help
+```
 
 I use some workflows in github actions (./github/workflows) to compile and test.  
 
