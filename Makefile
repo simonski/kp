@@ -17,9 +17,6 @@ usage:
 	@echo "  all                   - all of the above"
 	@echo ""
 
-init:
-	go mod github.com/rakyll/statik
-
 clean:
 	go clean
 	
@@ -37,8 +34,3 @@ all: clean build test install release
 
 release:
 	goreleaser --snapshot --skip-publish --rm-dist
-
-docker: build
-	GOOS=linux GOARCH=amd64 go build -o kp_linux
-	docker build -t kp .
-

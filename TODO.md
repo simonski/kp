@@ -2,6 +2,28 @@
 
 The road to 1.0 is finishing the TODO list.  Top of this page is the DOING section which
 *should* be a single feature that would be 0.0.X incrementing on each feature.
+Fix encryption
+
+    - make own encryption key
+    - keep it simple (private, no public necessary)
+    - kp init should do it
+    - kp anything else should error
+    - move it all out to a library so I can use it externally
+        github.com/simonski/kp
+            functions as KP_xxxx
+            
+    - inspect certificate
+        report on what it is, can we use it
+    - initial setup - whenwe have no env vars etc introduce a ./kp setup
+        look at different types of encryption keys as my regular one isn't working, weird
+    - verify/docs
+    - 'help' usage on each
+    - 'update' command to update description but not value
+        kp describe a "this is the thing"
+    a changelog
+    - fix typos, docs, help, 
+    - move to a crypto package or utils for other usage
+    - move cli to a cli project from goutils?
 
 ## DOING
 

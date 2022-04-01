@@ -1,19 +1,18 @@
 package main
 
+import "strings"
+
 // VERSION is the number of this beast
-const VERSION = "0.0.5"
+const VERSION = "0.0.7"
 
 // KP_FILE the key for the env var pointint to the file we load/save
 const KP_FILE = "KP_FILE"
 
-// KP_ENCRYPTION_ENABLED the key to the public key
-const KP_ENCRYPTION = "KP_ENCRYPTION"
+// KP_KEY the encypt/decrypt key
+const KP_KEY = "KP_KEY"
 
-// KP_PUBLIC_KEY the key to the public key
-const KP_PUBLIC_KEY = "KP_PUBLIC_KEY"
-
-// KP_PUBLIC_KEY the key to the private key
-const KP_PRIVATE_KEY = "KP_PRIVATE_KEY"
+const DEFAULT_KEY_FILE = "~/.ssh/kp.id_rsa"
+const DEFAULT_DB_FILE = "~/.kpfile"
 
 // GLOBAL_USAGE - well, it tells me what to type
 const GLOBAL_USAGE = `kp is a tool for using key/pairs.
@@ -27,24 +26,31 @@ The commands are:
     ls                                          list keys
     put <key> (-value VALUE) (-d description)   save "key/value" (read stdin if "-value" is unspecified)
     get <key> (-stdout)                         retrieve key/value to clipboard (or -stdout)
+    update <key> "description"                  update the descrption of the key/pair
     rm <key>                                    permanently remove "key"
+
+    encrypt <value>                             encrypt the value using the current key
+    decrypt <value>                             decrypt the value using the current key
 
     info                                        review environment variables used
     verify                                      check encryption keys exist and work
-    clear                                       remove all values
     version                                     print application version
 
 `
 
-const GLOBAL_SSH_KEYGEN_USAGE = `The following will create a key/pair for encryption: 
+const GLOBAL_SSH_KEYGEN_USAGE = `The following will create a suitable encryption key: 
 
-     ssh-keygen -m pem -f ~/.ssh/id_rsa
-     ssh-keygen -f ~/.ssh/id_rsa.pub -e -m pem > ~/.ssh/id_rsa.pem
+     TOKEN_DEFAULT_SSH_COMMAND
 
 You can optionally use environment variables to override the defaults:
 
-     export KP_FILE=~/.kpfile
-     export KP_PUBLIC_KEY=~/.ssh/id_rsa.pem
-     export KP_PRIVATE_KEY=~/.ssh/id_rsa
+     export KP_FILE=TOKEN_DEFAULT_DB_FILE
+     export KP_KEY=TOKEN_DEFAULT_KEY_FILE
 
 `
+
+const DEFAULT_OPENSSH_COMMAND = "ssh-keygen -b 2048 -t rsa -N \"\" -m pkcs8 -f TOKEN_DEFAULT_KEY_FILE"
+
+func GetSSHCommand(key string) string {
+	return strings.ReplaceAll(DEFAULT_OPENSSH_COMMAND, "TOKEN_DEFAULT_KEY_FILE", key)
+}

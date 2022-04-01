@@ -1,3 +1,0 @@
-FROM kp.base
-RUN go get github.com/simonski/kp@develop
-
