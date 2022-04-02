@@ -26,7 +26,7 @@ The `~/.kpfile` itself is plaintext, the values are encrypted.
 
 |name|purpose|default value|
 |----|-------|-------------|
-`KP_KEY`|Flename of private key|`~/.ssh/kp_id_rsa`
+`KP_KEY`|Flename of private key|`~/.ssh/kp.id_rsa`
 
 Create your encryption key
 
@@ -50,28 +50,40 @@ Assuming you get a "KP is setup correctly." message, you can then use `kp` in th
 
 Store a key/value
 
-	kp put <keyname> [-v value] [-d "description of the key/pair"]
-	>> STDIN value
+```bash
+kp put <keyname> [-v value] [-d "description of the key/pair"]
+>> STDIN value
+```
 
 Retrieve the value of a key to your clipboard
 
-	kp get <keyname>
+```bash
+kp get <keyname>
+```
 
 List all keys
 
-	kp ls
+```bash
+kp ls
+```
 
 Remove a key
 
-	kp rm <keyname>
+```bash
+kp rm <keyname>
+```
 
-Describe a key
+Describe a key without altering the value
 
-	kp put key -d "description"
+```bash
+kp put key -d "description"
+```
 
 Get help on any command:
 
-	kp
+```bash
+kp
+```
 
 # Environment variables
 
