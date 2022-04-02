@@ -22,35 +22,35 @@ By default, `kp` stores keypairs to a `~/.kpfile`.  This can be controlled with 
 
 ## Encryption
 
-The `~/.kpfile` itself is plaintext, the values of the keys can be encrypted if the environment variable `KP_ENCRYTION=1`.
-
-By default, encryption is OFF.  The following environment variables are used to control 
+The `~/.kpfile` itself is plaintext, the values are encrypted.
 
 |name|purpose|default value|
 |----|-------|-------------|
-`KP_ENCRYPTION`|Switches encryption on of off|`0`
-`KP_PUBLIC_KEY`|Flename of .pem encoded public key|`~/.ssh/kp_id_rsa.pem`
-`KP_PRIVATE_KEY`|Flename of private key|`~/.ssh/kp_id_rsa`
+`KP_KEY`|Flename of private key|`~/.ssh/kp_id_rsa`
 
-If you want to encrypt your data, create your encryption keys
+Create your encryption key
 
-	ssh-keygen -f ~/.ssh/kp_id_rsa
+```bash
+ssh-keygen -b 2048 -t rsa -N "" -m pkcs8 -f ~/.ssh/kp.id_rsa
+```
 
-Create a pem readable public key
+Or re-use one? - up to you:
 
-	ssh-keygen -f ~/.ssh/kp_id_rsa.pub -e -m pem > ~/.ssh/kp_id_rsa.pem
+```bash
+export KP_KEY=~/path/to/id_rsa
+```
 
 Finally, confirm kp is setup properly:
 
 	kp verify
 
-Assuming you get a "Verification Success" message, you can then use `kp` in the following manner - if you don't, it will explain what needs changing in the `verify` command itself.
+Assuming you get a "KP is setup correctly." message, you can then use `kp` in the following manner - if you don't, it will explain what needs changing in the `verify` command itself.
 
 ## Store a key
 
 Store a key/value
 
-	kp put <keyname> [-m message]
+	kp put <keyname> [-v value] [-d "description of the key/pair"]
 	>> STDIN value
 
 Retrieve the value of a key to your clipboard
@@ -63,15 +63,11 @@ List all keys
 
 Remove a key
 
-	crpytic rm <keyname>
+	kp rm <keyname>
 
-Descrive a key
+Describe a key
 
-	crpytic describe key "description"
-
-Remove all keys
-
-	kp clear
+	kp put key -d "description"
 
 Get help on any command:
 
@@ -83,10 +79,8 @@ You can optionally override settings such as encryption, location of files by se
 
 |name|dedscription|default value|
 -----|------------|-------------|
-`$KP_ENCRYPTION`|1 or 0, indicates if encrytion is used.|0
 `$KP_FILE`|The file keypairs are stored|`~/.kpfile`
-`$KP_PUBLICKEY`|The public key used for encryption|`~/.ssh/id_rsa.pem`
-`$KP_PRIVATEKEY`|The file keypairs are stored|`~/.ssh/id_rsa`
+`$KP_KEY`|The encryption key|`~/.ssh/kp.id_rsa`
 
 # Releases
 

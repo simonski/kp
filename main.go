@@ -159,15 +159,10 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 	// 	// fmt.Printf("KP_FILE '%v' exists.\n", kpFilename)
 	// }
 	if !privateKeyExists {
-		// line := fmt.Sprintf("KP_KEY '%v' does not exist.\n", privateKeyFilename)
-		// messages = append(messages, line)
 		overallValid = false
 		messages = append(messages, "\nEncryption key does not exist, try the following\n\n")
-		line := fmt.Sprintf("    %v", GetSSHCommand(privateKeyFilename))
+		line := fmt.Sprintf("    %v\n\n", GetSSHCommand(privateKeyFilename))
 		messages = append(messages, line)
-	} else {
-		// fmt.Printf("KP_KEY '%v' exists.\n", privateKeyFilename)
-
 	}
 
 	if overallValid {
