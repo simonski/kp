@@ -20,7 +20,8 @@ type KPDB struct {
 
 // DB is the thing that we serialise to JSON
 type DB struct {
-	Entries map[string]DBEntry
+	Version string             `json:"version"`
+	Entries map[string]DBEntry `json:"entries"`
 }
 
 // DBEntry represents the a single item in the DB
@@ -58,10 +59,26 @@ func (cdb *KPDB) Load(filename string, privKey string) bool {
 		} else {
 			db := DB{}
 			bytes, _ := ioutil.ReadAll(jsonFile)
-			var data map[string]DBEntry
-			json.Unmarshal(bytes, &data)
-			db.Entries = data
-			cdb.data = db
+
+			// let's see what sort of DB this is
+			// pre-version was a map of Entries
+			// post-version should be a DB
+			// we can test by trying to load the DB directly.
+			json.Unmarshal(bytes, &db)
+			if db.Version == "" {
+				var data map[string]DBEntry
+				json.Unmarshal(bytes, &data)
+				db.Entries = data
+				db.Version = DB_VERSION
+				cdb.data = db
+				cdb.Save()
+			} else {
+				// then it has a schema version
+				// really we should now check and upgrade, e.g.
+				// if db.Version != DB_VERSION
+				// upgrade()
+				cdb.data = db
+			}
 		}
 	}
 
@@ -75,7 +92,7 @@ func (cdb *KPDB) Clear() {
 
 // Save writes the DB to disk
 func (cdb *KPDB) Save() bool {
-	data := cdb.data.Entries
+	data := cdb.data
 	file, _ := json.MarshalIndent(data, "", " ")
 	err := ioutil.WriteFile(cdb.Filename, file, 0644)
 	if err != nil {

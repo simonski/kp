@@ -3,7 +3,8 @@ package main
 import "strings"
 
 // VERSION is the number of this beast
-const VERSION = "0.0.7"
+const VERSION = "0.0.8"
+const DB_VERSION = "0.0.1"
 
 // KP_FILE the key for the env var pointint to the file we load/save
 const KP_FILE = "KP_FILE"
