@@ -5,13 +5,13 @@ import (
 	"os"
 	"testing"
 
-	goutils "github.com/simonski/goutils"
+	cli "github.com/simonski/cli"
 )
 
 func main_test(t *testing.T) {
 
 	command := "fooo"
-	cli := goutils.NewCLI(os.Args)
+	cli := cli.New(os.Args)
 	if command == "test" {
 		db := LoadDB()
 		value := cli.GetStringOrDie(command)

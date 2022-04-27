@@ -157,12 +157,12 @@ func (cdb *KPDB) Delete(key string) {
 
 // Encrypt helper function encrypts with public key
 func (cdb *KPDB) Encrypt(value string) string {
-	encrypted, _ := crypto.EncryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
+	encrypted := crypto.EncryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
 	return encrypted
 }
 
 // Decrypt helper function decrypts with private key
 func (cdb *KPDB) Decrypt(value string) string {
-	decrypted, _ := crypto.DecryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
+	decrypted := crypto.DecryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
 	return decrypted
 }

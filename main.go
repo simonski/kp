@@ -9,13 +9,14 @@ import (
 
 	clipboard "github.com/atotto/clipboard"
 	figure "github.com/common-nighthawk/go-figure"
+	cli "github.com/simonski/cli"
 	goutils "github.com/simonski/goutils"
 	crypto "github.com/simonski/goutils/crypto"
 	terminal "golang.org/x/term"
 )
 
 func main() {
-	cli := goutils.NewCLI(os.Args)
+	cli := cli.New(os.Args)
 	command := cli.GetCommand()
 	if command == "help" {
 		DoLogo()
@@ -106,43 +107,43 @@ func isDescribe(command string) bool {
 }
 
 // A 'get' is basically not a a list, delete or a put
-func isGet(command string, cli *goutils.CLI) bool {
+func isGet(command string, c *cli.CLI) bool {
 	return command == "get"
 }
 
-func isPut(command string, cli *goutils.CLI) bool {
+func isPut(command string, c *cli.CLI) bool {
 	return command == "put"
 }
 
 func LoadDB() *KPDB {
-	filename := goutils.GetEnvOrDefault(KP_FILE, DEFAULT_DB_FILE)
-	privKey := goutils.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
+	filename := cli.GetEnvOrDefault(KP_FILE, DEFAULT_DB_FILE)
+	privKey := cli.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
 	db := NewKPDB(filename, privKey)
 	return db
 }
 
-func DoEncrypt(cli *goutils.CLI) {
-	privateKey := goutils.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
-	command := cli.GetCommand()
-	value := cli.GetStringOrDie(command)
-	result, _ := crypto.Encrypt(value, privateKey)
+func DoEncrypt(c *cli.CLI) {
+	privateKey := cli.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
+	command := c.GetCommand()
+	value := c.GetStringOrDie(command)
+	result := crypto.Encrypt(value, privateKey)
 	fmt.Println(result)
 }
 
-func DoDecrypt(cli *goutils.CLI) {
-	privateKey := goutils.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
-	command := cli.GetCommand()
-	value := cli.GetStringOrDie(command)
+func DoDecrypt(c *cli.CLI) {
+	privateKey := cli.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
+	command := c.GetCommand()
+	value := c.GetStringOrDie(command)
 	result, _ := crypto.Decrypt(value, privateKey)
 	fmt.Println(result)
 }
 
 // DoVerify performs verification of ~/.KPfile, encryption/decryption using
 // specified keys
-func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
+func DoVerify(c *cli.CLI, printFailuresToStdOut bool) bool {
 	overallValid := true
-	kpFilename := goutils.GetEnvOrDefault(KP_FILE, DEFAULT_DB_FILE)
-	privateKeyFilename := goutils.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
+	kpFilename := cli.GetEnvOrDefault(KP_FILE, DEFAULT_DB_FILE)
+	privateKeyFilename := cli.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
 
 	filenameExists := goutils.FileExists(goutils.EvaluateFilename(kpFilename))
 	privateKeyExists := goutils.FileExists(goutils.EvaluateFilename(privateKeyFilename))
@@ -168,7 +169,7 @@ func DoVerify(cli *goutils.CLI, printFailuresToStdOut bool) bool {
 	if overallValid {
 		// try to encrypt/decrypt something
 		plain := "Hello, World"
-		encrypted, _ := crypto.Encrypt(plain, privateKeyFilename)
+		encrypted := crypto.Encrypt(plain, privateKeyFilename)
 		decrypted, _ := crypto.Decrypt(encrypted, privateKeyFilename)
 		if plain != decrypted {
 			line := "Encrypt/Decrypt not working.\n"
@@ -192,10 +193,10 @@ func DoLogo() {
 	f.Print()
 }
 
-func DoInfo(cli *goutils.CLI) {
+func DoInfo(c *cli.CLI) {
 
-	filename := goutils.GetEnvOrDefault(KP_FILE, DEFAULT_DB_FILE)
-	privKey := goutils.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
+	filename := cli.GetEnvOrDefault(KP_FILE, DEFAULT_DB_FILE)
+	privKey := cli.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
 
 	fmt.Printf("\nKP is currently using the following values:\n")
 	fmt.Printf("\n%v  : %v\n", KP_FILE, filename)
@@ -224,9 +225,9 @@ func DoInfo(cli *goutils.CLI) {
 
 }
 
-func DoGet(cli *goutils.CLI) {
-	command := cli.GetCommand()
-	key := cli.GetStringOrDie(command)
+func DoGet(c *cli.CLI) {
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
 	db := LoadDB()
 	entry, exists := db.Get(key)
 	if exists {
@@ -235,7 +236,7 @@ func DoGet(cli *goutils.CLI) {
 		if err != nil {
 			fmt.Printf("%v", err)
 		}
-		if cli.IndexOf("-stdout") > -1 {
+		if c.IndexOf("-stdout") > -1 {
 			fmt.Printf("%v\n", value)
 		}
 	} else {
@@ -244,10 +245,10 @@ func DoGet(cli *goutils.CLI) {
 	}
 }
 
-func DoPut(cli *goutils.CLI) {
+func DoPut(c *cli.CLI) {
 	db := LoadDB()
-	command := cli.GetCommand()
-	key := cli.GetStringOrDie(command)
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
 	if len(key) > 25 {
 		fmt.Printf("Error, key must be <= 25 characters.\n")
 		os.Exit(1)
@@ -262,10 +263,10 @@ func DoPut(cli *goutils.CLI) {
 	} else {
 		description = ""
 	}
-	description = cli.GetStringOrDefault("-d", description)
+	description = c.GetStringOrDefault("-d", description)
 	password := ""
-	if cli.IndexOf("-value") > -1 {
-		password = cli.GetStringOrDefault("-value", "")
+	if c.IndexOf("-value") > -1 {
+		password = c.GetStringOrDefault("-value", "")
 		if password == "" {
 			fmt.Printf("Error, -value cannot be empty.")
 			os.Exit(1)
@@ -279,26 +280,26 @@ func DoPut(cli *goutils.CLI) {
 	db.Save()
 }
 
-func DoUpdateDescription(cli *goutils.CLI) {
+func DoUpdateDescription(c *cli.CLI) {
 	db := LoadDB()
-	command := cli.GetCommand()
-	key := cli.GetStringOrDie(command)
-	description := cli.GetStringOrDie(key)
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
+	description := c.GetStringOrDie(key)
 	db.UpdateDescription(key, description)
 	db.Save()
 }
 
-func DoDescribe(cli *goutils.CLI) {
+func DoDescribe(c *cli.CLI) {
 	db := LoadDB()
-	command := cli.GetCommand()
-	key := cli.GetStringOrDie(command)
-	description := cli.GetStringOrDie(key)
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
+	description := c.GetStringOrDie(key)
 	value, _ := db.Get(key)
 	db.Put(key, value.Value, description)
 	db.Save()
 }
 
-func DoList(cli *goutils.CLI) {
+func DoList(c *cli.CLI) {
 	db := LoadDB()
 	data := db.GetData()
 	if len(data.Entries) == 0 {
@@ -369,9 +370,9 @@ func DoList(cli *goutils.CLI) {
 	}
 }
 
-func DoDelete(cli *goutils.CLI) {
-	command := cli.GetCommand()
-	key := cli.GetStringOrDefault(command, "")
+func DoDelete(c *cli.CLI) {
+	command := c.GetCommand()
+	key := c.GetStringOrDefault(command, "")
 	if key == "" {
 		USAGE := "kp rm [key]"
 		fmt.Printf("%v\n", USAGE)
@@ -387,10 +388,10 @@ func DoDelete(cli *goutils.CLI) {
 
 }
 
-func DoUsage(cli *goutils.CLI) {
+func DoUsage(c *cli.CLI) {
 	fmt.Printf(GLOBAL_USAGE)
 }
 
-func DoVersion(cli *goutils.CLI) {
+func DoVersion(c *cli.CLI) {
 	fmt.Printf("%v\n", VERSION)
 }
