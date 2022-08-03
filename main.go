@@ -126,8 +126,13 @@ func DoEncrypt(c *cli.CLI) {
 	privateKey := cli.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
 	command := c.GetCommand()
 	value := c.GetStringOrDie(command)
-	result := crypto.Encrypt(value, privateKey)
-	fmt.Println(result)
+	result, err := crypto.Encrypt(value, privateKey)
+	if err != nil {
+		fmt.Printf("Problem decrypting:\n%v\n", err)
+		os.Exit(1)
+	} else {
+		fmt.Println(result)
+	}
 }
 
 func DoDecrypt(c *cli.CLI) {
@@ -169,7 +174,12 @@ func DoVerify(c *cli.CLI, printFailuresToStdOut bool) bool {
 	if overallValid {
 		// try to encrypt/decrypt something
 		plain := "Hello, World"
-		encrypted := crypto.Encrypt(plain, privateKeyFilename)
+		encrypted, err := crypto.Encrypt(plain, privateKeyFilename)
+		if err != nil {
+			line := fmt.Sprintf("Error encrypting: %v\n", err)
+			messages = append(messages, line)
+			overallValid = false
+		}
 		decrypted, _ := crypto.Decrypt(encrypted, privateKeyFilename)
 		if plain != decrypted {
 			line := "Encrypt/Decrypt not working.\n"
@@ -306,12 +316,12 @@ func DoList(c *cli.CLI) {
 		fmt.Printf("DB is empty.\n")
 	} else {
 		maxLength := 0
-		for key, _ := range data.Entries {
+		for key := range data.Entries {
 			maxLength = goutils.Max(len(key), maxLength)
 		}
 
 		keys := make([]string, 0)
-		for key, _ := range data.Entries {
+		for key := range data.Entries {
 			keys = append(keys, key)
 		}
 		sort.Strings(keys)
@@ -322,10 +332,10 @@ func DoList(c *cli.CLI) {
 		width := key_width + desc_width + (2 * date_width) + 4
 
 		line := strings.Repeat("-", width) + "\n"
-		fmt.Printf(line)
+		fmt.Print(line)
 		header := fmt.Sprintf("| Key%v| Description%v| Updated%v| Created%v|\n", strings.Repeat(" ", key_width-len("Key")-1), strings.Repeat(" ", desc_width-len("Description")-1), strings.Repeat(" ", date_width-len("Updated")-1), strings.Repeat(" ", date_width-len("Created")-1))
-		fmt.Printf(header)
-		fmt.Printf(line)
+		fmt.Print(header)
+		fmt.Print(line)
 		max_key_length := key_width - 5
 		max_description_length := desc_width - 5
 		for _, key := range keys {
@@ -364,9 +374,9 @@ func DoList(c *cli.CLI) {
 			}
 
 			entry_line := fmt.Sprintf("| %v%v| %v%v| %v%v| %v%v|\n", key, strings.Repeat(" ", keyExtra), desc, strings.Repeat(" ", descExtra), updated, strings.Repeat(" ", updatedExtra), created, strings.Repeat(" ", createdExtra))
-			fmt.Printf(entry_line)
+			fmt.Print(entry_line)
 		}
-		fmt.Printf(line)
+		fmt.Print(line)
 	}
 }
 
@@ -389,7 +399,7 @@ func DoDelete(c *cli.CLI) {
 }
 
 func DoUsage(c *cli.CLI) {
-	fmt.Printf(GLOBAL_USAGE)
+	fmt.Print(GLOBAL_USAGE)
 }
 
 func DoVersion(c *cli.CLI) {

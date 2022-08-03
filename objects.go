@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"time"
 
@@ -58,7 +58,7 @@ func (cdb *KPDB) Load(filename string, privKey string) bool {
 			cdb.data = db
 		} else {
 			db := DB{}
-			bytes, _ := ioutil.ReadAll(jsonFile)
+			bytes, _ := io.ReadAll(jsonFile)
 
 			// let's see what sort of DB this is
 			// pre-version was a map of Entries
@@ -94,7 +94,7 @@ func (cdb *KPDB) Clear() {
 func (cdb *KPDB) Save() bool {
 	data := cdb.data
 	file, _ := json.MarshalIndent(data, "", " ")
-	err := ioutil.WriteFile(cdb.Filename, file, 0644)
+	err := os.WriteFile(cdb.Filename, file, 0644)
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
@@ -110,8 +110,7 @@ func (cdb *KPDB) GetData() DB {
 func (cdb *KPDB) Get(key string) (DBEntry, bool) {
 	entry, exists := cdb.data.Entries[key]
 	if exists {
-		decValue := entry.Value
-		decValue = cdb.Decrypt(entry.Value)
+		decValue, _ := cdb.Decrypt(entry.Value)
 		entry.Value = decValue
 	}
 	return entry, exists
@@ -131,7 +130,7 @@ func (cdb *KPDB) UpdateDescription(key string, description string) (DBEntry, boo
 func (cdb *KPDB) Put(key string, value string, description string) {
 	entry, exists := cdb.data.Entries[key]
 	encValue := value
-	encValue = cdb.Encrypt(value)
+	encValue, _ = cdb.Encrypt(value)
 	if exists {
 		if value != "" {
 			entry.Value = encValue
@@ -156,13 +155,11 @@ func (cdb *KPDB) Delete(key string) {
 }
 
 // Encrypt helper function encrypts with public key
-func (cdb *KPDB) Encrypt(value string) string {
-	encrypted := crypto.EncryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
-	return encrypted
+func (cdb *KPDB) Encrypt(value string) (string, error) {
+	return crypto.EncryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
 }
 
 // Decrypt helper function decrypts with private key
-func (cdb *KPDB) Decrypt(value string) string {
-	decrypted := crypto.DecryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
-	return decrypted
+func (cdb *KPDB) Decrypt(value string) (string, error) {
+	return crypto.DecryptWithPrivateKeyFilename(value, cdb.PrivateKeyFilename)
 }
