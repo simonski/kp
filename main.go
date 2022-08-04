@@ -56,8 +56,6 @@ func main() {
 		DoEncrypt(cli)
 	} else if isDecrypt(command) {
 		DoDecrypt(cli)
-	} else if isDescribe(command) {
-		DoDescribe(cli)
 	} else if isUpdate(command) {
 		DoUpdate(cli)
 	} else if isRename(command) {
@@ -110,15 +108,11 @@ func isVersion(command string) bool {
 }
 
 func isList(command string) bool {
-	return command == "ls"
+	return command == "ls" || command == "list"
 }
 
 func isSearch(command string) bool {
 	return command == "search"
-}
-
-func isDescribe(command string) bool {
-	return command == "describe"
 }
 
 // A 'get' is basically not a a list, delete or a put
@@ -326,8 +320,8 @@ func DoDescribe(c *cli.CLI) {
 		fmt.Printf("Description  : %v\n", entry.Description)
 		fmt.Printf("Username     : %v\n", entry.Username)
 		fmt.Printf("Url          : %v\n", entry.Url)
-		fmt.Printf("Created      : %v\n", entry.Created.Format(time.RFC822Z))
-		fmt.Printf("Last Updated : %v\n", entry.LastUpdated.Format(time.RFC822Z))
+		fmt.Printf("Created      : %v\n", entry.Created.Format(time.RFC822))
+		fmt.Printf("Last Updated : %v\n", entry.LastUpdated.Format(time.RFC822))
 		fmt.Printf("Type         : %v\n", entry.Type)
 		fmt.Printf("Notes        : %v\n", entry.Notes)
 	} else {
@@ -366,7 +360,7 @@ func DoList(c *cli.CLI, searchTerm string) {
 		}
 		sort.Strings(keys)
 
-		date_width := len(time.Now().Format(time.RFC822Z)) + 1
+		date_width := len(time.Now().Format(time.RFC822)) + 1
 		width := max_key + max_url + max_username + max_type + max_description + max_notes + (2 * date_width) + 8
 
 		line := strings.Repeat("-", width+1)
@@ -396,7 +390,6 @@ func DoList(c *cli.CLI, searchTerm string) {
 				if !found {
 					continue
 				}
-
 			}
 			notes := entry.Notes
 			if notes != "" {
