@@ -1,8 +1,10 @@
 2022-08-03
+
 0.0.9
 go 1.19
 staticcheck
 UX improvements for put, get and list
+added "notes, username, url" to the model
 
 2022-04-02
 0.0.8

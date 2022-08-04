@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"time"
 
 	goutils "github.com/simonski/goutils"
@@ -29,6 +30,10 @@ type DBEntry struct {
 	Key         string    `json:"key"`
 	Value       string    `json:"value"`
 	Description string    `json:"description"`
+	Notes       string    `json:"notes"`
+	Username    string    `json:"username"`
+	Url         string    `json:"url"`
+	Type        string    `json:"type"`
 	LastUpdated time.Time `json:"lastUpdated"`
 	Created     time.Time `json:"created"`
 }
@@ -68,6 +73,7 @@ func (cdb *KPDB) Load(filename string, privKey string) bool {
 			if db.Version == "" {
 				var data map[string]DBEntry
 				json.Unmarshal(bytes, &data)
+
 				db.Entries = data
 				db.Version = DB_VERSION
 				cdb.data = db
@@ -79,10 +85,35 @@ func (cdb *KPDB) Load(filename string, privKey string) bool {
 				// upgrade()
 				cdb.data = db
 			}
+
+			for k, v := range cdb.data.Entries {
+				if v.Key == "" {
+					v.Key = k
+					cdb.data.Entries[k] = v
+				}
+			}
+
 		}
 	}
 
 	return true
+}
+
+func (cdb *KPDB) GetEntriesSortedByUpdatedThenKey() []DBEntry {
+
+	entries := make([]DBEntry, 0)
+	for _, e := range cdb.data.Entries {
+		entries = append(entries, e)
+	}
+
+	sort.Slice(entries, func(a int, b int) bool {
+		entryA := entries[a]
+		entryB := entries[b]
+		return entryA.LastUpdated.After(entryB.LastUpdated) && entryA.Key < entryB.Key
+	})
+
+	return entries
+
 }
 
 // Clear empties the db (without saving it)
@@ -107,7 +138,7 @@ func (cdb *KPDB) GetData() DB {
 }
 
 // Get returns the (DBEntry, bool) indicating it exists (or not)
-func (cdb *KPDB) Get(key string) (DBEntry, bool) {
+func (cdb *KPDB) GetDecrypted(key string) (DBEntry, bool) {
 	entry, exists := cdb.data.Entries[key]
 	if exists {
 		decValue, _ := cdb.Decrypt(entry.Value)
@@ -118,35 +149,24 @@ func (cdb *KPDB) Get(key string) (DBEntry, bool) {
 
 // Get returns the (DBEntry, bool) indicating it exists (or not)
 func (cdb *KPDB) UpdateDescription(key string, description string) (DBEntry, bool) {
-	entry, exists := cdb.Get(key)
-	cdb.Put(entry.Key, entry.Value, description)
-	if exists {
-		entry.Description = description
-	}
+	entry, exists := cdb.GetDecrypted(key)
+	entry.Description = description
+	cdb.Put(entry)
 	return entry, exists
 }
 
 // Put stores (or replaces) the key/value pair
-func (cdb *KPDB) Put(key string, value string, description string) {
-	entry, exists := cdb.data.Entries[key]
-	encValue := value
-	encValue, _ = cdb.Encrypt(value)
-	if exists {
-		if value != "" {
-			entry.Value = encValue
-		}
-		entry.LastUpdated = time.Now()
-		if description != "" {
-			entry.Description = description
-		}
-		cdb.data.Entries[key] = entry
+func (cdb *KPDB) Put(entry_in DBEntry) {
+	entry, exists := cdb.data.Entries[entry_in.Key]
+	encValue, _ := cdb.Encrypt(entry_in.Value)
+	entry_in.Value = encValue
+	if !exists {
+		entry_in.Created = entry.Created
 	} else {
-		entry = DBEntry{Key: key, Value: encValue, Created: time.Now(), LastUpdated: time.Now()}
-		if description != "" {
-			entry.Description = description
-		}
-		cdb.data.Entries[key] = entry
+		entry_in.Created = time.Now()
 	}
+	entry_in.LastUpdated = time.Now()
+	cdb.data.Entries[entry_in.Key] = entry_in
 }
 
 // Delete removes the key/value pair from the DB
