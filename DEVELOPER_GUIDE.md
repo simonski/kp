@@ -1,5 +1,13 @@
 # Developer Guide
 
+## Initial Setup
+
+Install dependencies
+
+```bash
+make setup
+```
+
 ## Building
 
 To build locally
@@ -23,4 +31,3 @@ Use github PRs and vefify using "Compile and Test" actions that the PR is good.
 ## Extending
 
 ## Encryption
-
