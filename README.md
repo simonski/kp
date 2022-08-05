@@ -8,7 +8,9 @@ This is OSS - if you want to contribute please read the [DEVELOPER_GUIDE.md](DEV
 
 Install via `go get`
 
-	go get github.com/simonski/kp
+```bash
+go get github.com/simonski/kp
+```
 
 This will install `kp` onto your `$GOBIN`. Please ensure `$GOBIN` is on your `$PATH`.
 
@@ -16,13 +18,15 @@ This will install `kp` onto your `$GOBIN`. Please ensure `$GOBIN` is on your `$P
 
 Once you've installed kp and can type `kp version`, you will need to configure kp.
 
-	kp verify
+```bash
+kp verify
+```
 
 By default, `kp` stores keypairs to a `~/.kpfile`.  This can be controlled with the environment variable `KP_FILE`
 
 ## Encryption
 
-The `~/.kpfile` itself is plaintext, the values are encrypted.
+The `~/.kpfile` itself is plaintext, the password is encrypted.
 
 |name|purpose|default value|
 |----|-------|-------------|
@@ -42,41 +46,54 @@ export KP_KEY=~/path/to/id_rsa
 
 Finally, confirm kp is setup properly:
 
-	kp verify
+```bash
+kp verify
+```
 
 Assuming you get a "KP is setup correctly." message, you can then use `kp` in the following manner - if you don't, it will explain what needs changing in the `verify` command itself.
 
-## Store a key
+## Usage
 
-Store a key/value
+### Store a key/value
 
 ```bash
-kp put <keyname> [-v value] [-d "description of the key/pair"]
+kp put <keyname>
 >> STDIN value
 ```
 
-Retrieve the value of a key to your clipboard
+### Retrieve the value of a key to your clipboard
 
 ```bash
 kp get <keyname>
 ```
 
-List all keys
+### List all keys
 
 ```bash
 kp ls
 ```
 
-Remove a key
+### Search for an entry
+
+```bash
+kp search widget
+```
+
+### Update a key
+
+```bash
+kp update <key> 
+ -type         "type"
+ -url          "url"
+ -username     "username"
+ -description  "description"
+ -notes        "notes"
+```
+
+### Remove a key
 
 ```bash
 kp rm <keyname>
-```
-
-Describe a key without altering the value
-
-```bash
-kp put key -d "description"
 ```
 
 Get help on any command:
@@ -85,11 +102,11 @@ Get help on any command:
 kp
 ```
 
-# Environment variables
+## Environment variables
 
 You can optionally override settings such as encryption, location of files by setting the following environment variables:
 
-|name|dedscription|default value|
+|name|description|default value|
 -----|------------|-------------|
 `$KP_FILE`|The file keypairs are stored|`~/.kpfile`
 `$KP_KEY`|The encryption key|`~/.ssh/kp.id_rsa`
