@@ -1,3 +1,4 @@
+// kp is a toy keypair manager
 package main
 
 import (
@@ -252,6 +253,7 @@ func DoPut(c *cli.CLI) {
 		os.Exit(1)
 	}
 	entry, _ := db.GetDecrypted(key)
+	entry.Key = key
 	entry.Description = c.GetStringOrDefault("-description", entry.Description)
 	entry.Type = c.GetStringOrDefault("-type", entry.Type)
 	entry.Notes = c.GetStringOrDefault("-note", entry.Notes)
@@ -269,7 +271,9 @@ func DoPut(c *cli.CLI) {
 		bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
 		password = string(bytePassword)
 	}
-	entry.Value = password
+	if password != "" {
+		entry.Value = password
+	}
 	db.Put(entry)
 	db.Save()
 }

@@ -6,8 +6,10 @@ import (
 	"io"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	goutils "github.com/simonski/goutils"
 	crypto "github.com/simonski/goutils/crypto"
 )
@@ -87,7 +89,11 @@ func (cdb *KPDB) Load(filename string, privKey string) bool {
 			}
 
 			for k, v := range cdb.data.Entries {
-				if v.Key == "" {
+				if strings.TrimSpace(v.Key) == "" {
+					delete(cdb.data.Entries, v.Key)
+					if strings.TrimSpace(k) == "" {
+						k = uuid.New().String()
+					}
 					v.Key = k
 					cdb.data.Entries[k] = v
 				}
@@ -106,10 +112,12 @@ func (cdb *KPDB) GetEntriesSortedByUpdatedThenKey() []DBEntry {
 		entries = append(entries, e)
 	}
 
-	sort.Slice(entries, func(a int, b int) bool {
+	sort.SliceStable(entries, func(a int, b int) bool {
 		entryA := entries[a]
 		entryB := entries[b]
-		return entryA.LastUpdated.After(entryB.LastUpdated) && entryA.Key < entryB.Key
+		keyA := strings.ToLower(entryA.Key)
+		keyB := strings.ToLower(entryB.Key)
+		return keyA < keyB
 	})
 
 	return entries
