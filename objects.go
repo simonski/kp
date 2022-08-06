@@ -25,6 +25,7 @@ type KPDB struct {
 type DB struct {
 	Version string             `json:"version"`
 	Entries map[string]DBEntry `json:"entries"`
+	History map[string]DBEntry `json:"history"`
 }
 
 // DBEntry represents the a single item in the DB

@@ -18,9 +18,15 @@ import (
 )
 
 func main() {
+	graphics_env := cli.GetEnvOrDefault("KP_GUI", "0") == "1"
 	cli := cli.New(os.Args)
+	graphics_cli := cli.IndexOf("-g") > -1
 	command := cli.GetCommand()
-	if command == "help" {
+
+	if graphics_cli || graphics_env {
+		DoGraphics(cli)
+		return
+	} else if command == "help" {
 		DoLogo()
 		DoUsage(cli)
 		return
@@ -123,6 +129,14 @@ func isGet(command string, c *cli.CLI) bool {
 
 func isPut(command string, c *cli.CLI) bool {
 	return command == "put"
+}
+
+func DoGraphics(c *cli.CLI) {
+	filename := cli.GetEnvOrDefault(KP_FILE, DEFAULT_DB_FILE)
+	privKey := cli.GetEnvOrDefault(KP_KEY, DEFAULT_KEY_FILE)
+	db := NewKPDB(filename, privKey)
+	gui := NewGUI(db)
+	gui.Run()
 }
 
 func LoadDB() *KPDB {
