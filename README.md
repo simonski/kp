@@ -104,7 +104,7 @@ kp
 
 ## Environment variables
 
-You can optionally override settings such as encryption, location of files by setting the following environment variables:
+kp tries to run with sensible defaults. You can override them using the following envinronment variables:
 
 |name|description|default value|
 -----|------------|-------------|
