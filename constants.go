@@ -3,7 +3,7 @@ package main
 import "strings"
 
 // VERSION is the number of this beast
-const VERSION = "0.0.10"
+const VERSION = "0.0.11"
 const DB_VERSION = "0.0.1"
 
 // KP_FILE the key for the env var pointint to the file we load/save
@@ -42,6 +42,12 @@ The commands are:
 
     encrypt <value>                             encrypt the value using the current openssh key
     decrypt <value>                             decrypt the value using the current openssh key
+
+    show                                        show(unhide) a hidden key
+    hide                                        hide a visible key
+
+    tag   <key> <tag>                           add tag to a key
+    untag <key> <tag>                           remove tag from a key
 
     info                                        review environment variables used
     verify                                      check encryption keys exist and work
