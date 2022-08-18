@@ -73,10 +73,16 @@ kp get <keyname>
 kp ls
 ```
 
+### List all keys (including hidden)
+
+```bash
+kp ls -a
+```
+
 ### Search for an entry
 
 ```bash
-kp search widget
+kp ls widget
 ```
 
 ### Update a key
@@ -100,6 +106,18 @@ Get help on any command:
 
 ```bash
 kp
+```
+
+### Hide a key
+
+```bash
+kp hide <keyname>
+```
+
+### Show the key
+
+```bash
+kp show <keyname>
 ```
 
 ## Environment variables

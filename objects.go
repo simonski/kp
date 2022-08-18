@@ -39,6 +39,7 @@ type DBEntry struct {
 	Type        string    `json:"type"`
 	LastUpdated time.Time `json:"lastUpdated"`
 	Created     time.Time `json:"created"`
+	Hidden      bool      `json:"hidden"`
 }
 
 // NewKPDB constructor
