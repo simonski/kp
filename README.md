@@ -1,6 +1,6 @@
 # KP
 
-A terminal tool to manage key/pairs. I use it to manage *temporary* key/pairs on *controlled* hardware.
+A terminal tool to manage key/pairs.
 
 This is OSS - if you want to contribute please read the [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md).
 
@@ -73,10 +73,16 @@ kp get <keyname>
 kp ls
 ```
 
+### List all keys (including hidden)
+
+```bash
+kp ls -a
+```
+
 ### Search for an entry
 
 ```bash
-kp search widget
+kp ls widget
 ```
 
 ### Update a key
@@ -102,15 +108,28 @@ Get help on any command:
 kp
 ```
 
+### Hide a key
+
+```bash
+kp hide <keyname>
+```
+
+### Show the key
+
+```bash
+kp show <keyname>
+```
+
 ## Environment variables
 
-You can optionally override settings such as encryption, location of files by setting the following environment variables:
+kp tries to run with sensible defaults. You can override them using the following envinronment variables:
 
 |name|description|default value|
 -----|------------|-------------|
 `$KP_FILE`|The file keypairs are stored|`~/.kpfile`
 `$KP_KEY`|The encryption key|`~/.ssh/kp.id_rsa`
+`$KP_GUI`|Run in graphics mode (`0` or `1`)|`0`
 
-# Releases
+## Releases
 
 I use github actions to create a crossplatform release binary on a tag.

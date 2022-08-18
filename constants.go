@@ -3,7 +3,7 @@ package main
 import "strings"
 
 // VERSION is the number of this beast
-const VERSION = "0.0.10"
+const VERSION = "0.0.11"
 const DB_VERSION = "0.0.1"
 
 // KP_FILE the key for the env var pointint to the file we load/save
@@ -24,7 +24,8 @@ Usage:
 
 The commands are:
 
-    ls                                          list keys
+    ls  <search term>                           list keys 
+         -a (include hidden)
 
     put <key> (-value VALUE)                    save "key/value" (read stdin if "-value" is unspecified)
     get <key> (-stdout)                         retrieve key/value to clipboard (or -stdout)
@@ -42,6 +43,9 @@ The commands are:
 
     encrypt <value>                             encrypt the value using the current openssh key
     decrypt <value>                             decrypt the value using the current openssh key
+
+    hide <key>                                  archive (hide) the key
+    show <key>                                  unarchive (make visible) the key
 
     info                                        review environment variables used
     verify                                      check encryption keys exist and work

@@ -1,16 +1,31 @@
+# 1.0.0 TermUI
+
+look at bubbletea
+    Add TermUI interface.
+    DONE -g mode or KP_GUI=1 to launch in gui termui mode
+    DONE q quits
+    a "good" ux for termui
+    resize window
+    include search functionality
+    include demo functionality (prepopulate with lots of random keys to examine functionality)
+    / for search
+    asdw / jkli
+    e edits
+    enter selects into memory and quits
+    fill to screen
+    list keys and details, arrow keys, asdw and jkli for navigation
+    d moves to delete/confirm
+    mouse event over a thing
+
 # 1.0.0
 
 The road to 1.0 is finishing the TODO list.  Top of this page is the DOING section which
 *should* be a single feature that would be 0.0.X incrementing on each feature.
 Fix encryption
 
-    - make own encryption key
+    - make own encryption key at startup via kp init
     - keep it simple (private, no public necessary)
     - kp init should do it
-    - kp anything else should error
-    - move it all out to a library so I can use it externally
-        github.com/simonski/kp
-            functions as KP_xxxx
             
     - inspect certificate
         report on what it is, can we use it
@@ -20,16 +35,22 @@ Fix encryption
     - 'help' usage on each
     - 'update' command to update description but not value
         kp describe a "this is the thing"
-    a changelog
     - fix typos, docs, help, 
-    - move to a crypto package or utils for other usage
-    - move cli to a cli project from goutils?
+    - retain history as older copies
+
+    - move it all out to a library so I can use it externally
+        github.com/simonski/kp
+            functions as KP_xxxx
+
+    - DONE a changelog
+    - DONE move to a crypto package or utils for other usage
+    - DONE move cli to a cli project from goutils?
 
 ## DOING
 
 branch: features/prep_v1
 
-- DONE: basics of encryption work. 
+- DONE: basics of encryption work.
 - Improve error handling and information.
 - "init", "verify", "setup" steps to be described and completed
 - "info" is almost pointless
