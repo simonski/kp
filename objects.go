@@ -40,6 +40,7 @@ type DBEntry struct {
 	Tags        map[string]bool `json:"tags"`
 	LastUpdated time.Time       `json:"lastUpdated"`
 	Created     time.Time       `json:"created"`
+	Hidden      bool            `json:"hidden"`
 }
 
 // NewKPDB constructor

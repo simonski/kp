@@ -24,7 +24,8 @@ Usage:
 
 The commands are:
 
-    ls                                          list keys
+    ls  <search term>                           list keys 
+         -a (include hidden)
 
     put <key> (-value VALUE)                    save "key/value" (read stdin if "-value" is unspecified)
     get <key> (-stdout)                         retrieve key/value to clipboard (or -stdout)
@@ -43,11 +44,11 @@ The commands are:
     encrypt <value>                             encrypt the value using the current openssh key
     decrypt <value>                             decrypt the value using the current openssh key
 
-    show                                        show(unhide) a hidden key
-    hide                                        hide a visible key
-
     tag   <key> <tag>                           add tag to a key
     untag <key> <tag>                           remove tag from a key
+
+    hide <key>                                  archive (hide) the key
+    show <key>                                  unarchive (make visible) the key
 
     info                                        review environment variables used
     verify                                      check encryption keys exist and work

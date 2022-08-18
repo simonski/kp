@@ -1,12 +1,11 @@
 # 1.0.0 TermUI
 
+look at bubbletea
     Add TermUI interface.
     DONE -g mode or KP_GUI=1 to launch in gui termui mode
     DONE q quits
     a "good" ux for termui
     resize window
-    mouse event over a thing
-    
     include search functionality
     include demo functionality (prepopulate with lots of random keys to examine functionality)
     / for search
@@ -16,6 +15,7 @@
     fill to screen
     list keys and details, arrow keys, asdw and jkli for navigation
     d moves to delete/confirm
+    mouse event over a thing
 
 # 1.0.0
 

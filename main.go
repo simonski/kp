@@ -51,10 +51,15 @@ func main() {
 	}
 
 	if isList(command) {
-		DoList(cli, "")
-	} else if isSearch(command) {
 		searchTerm := cli.GetStringOrDefault(command, "")
+		if searchTerm == "-a" {
+			searchTerm = cli.GetStringOrDefault(searchTerm, "")
+		}
 		DoList(cli, searchTerm)
+	} else if isHide(command) {
+		DoHide(cli)
+	} else if isShow(command) {
+		DoShow(cli)
 	} else if isVersion(command) {
 		DoVersion(cli)
 	} else if isPut(command, cli) {
@@ -130,8 +135,12 @@ func isList(command string) bool {
 	return command == "ls" || command == "list"
 }
 
-func isSearch(command string) bool {
-	return command == "search"
+func isHide(command string) bool {
+	return command == "hide"
+}
+
+func isShow(command string) bool {
+	return command == "show"
 }
 
 // A 'get' is basically not a a list, delete or a put
@@ -330,6 +339,17 @@ func DoTag(c *cli.CLI) {
 	entry.Tags[tag] = true
 	db.Put(entry)
 	db.Save()
+
+}
+
+func DoHide(c *cli.CLI) {
+	db := LoadDB()
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
+	entry, _ := db.GetDecrypted(key)
+	entry.Hidden = true
+	db.Put(entry)
+	db.Save()
 }
 
 func DoUntag(c *cli.CLI) {
@@ -342,6 +362,16 @@ func DoUntag(c *cli.CLI) {
 		entry.Tags = make(map[string]bool)
 	}
 	delete(entry.Tags, tag)
+	db.Put(entry)
+	db.Save()
+
+}
+func DoShow(c *cli.CLI) {
+	db := LoadDB()
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
+	entry, _ := db.GetDecrypted(key)
+	entry.Hidden = false
 	db.Put(entry)
 	db.Save()
 }
@@ -391,11 +421,17 @@ func DoDescribe(c *cli.CLI) {
 func DoList(c *cli.CLI, searchTerm string) {
 	db := LoadDB()
 	data := db.GetData()
+	includeHidden := c.IndexOf("-a") > -1
+
 	if len(data.Entries) == 0 {
 		fmt.Printf("DB is empty.\n")
 	} else {
 		maxLength := 0
 		for key := range data.Entries {
+			entry := data.Entries[key]
+			if !includeHidden && entry.Hidden {
+				continue
+			}
 			maxLength = goutils.Max(len(key), maxLength)
 		}
 
@@ -408,6 +444,9 @@ func DoList(c *cli.CLI, searchTerm string) {
 		max_notes := len("Notes") + 1
 
 		for key, entry := range data.Entries {
+			if !includeHidden && entry.Hidden {
+				continue
+			}
 			keys = append(keys, key)
 			max_key = goutils.Max(len(entry.Key)+1, max_key)
 			max_url = goutils.Max(len(entry.Url)+1, max_url)
@@ -437,6 +476,9 @@ func DoList(c *cli.CLI, searchTerm string) {
 		fmt.Println(line)
 
 		for _, entry := range db.GetEntriesSortedByUpdatedThenKey() {
+			if !includeHidden && entry.Hidden {
+				continue
+			}
 
 			if searchTerm != "" {
 				found := strings.Contains(entry.Key, searchTerm)
