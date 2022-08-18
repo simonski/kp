@@ -70,6 +70,10 @@ func main() {
 		DoDecrypt(cli)
 	} else if isUpdate(command) {
 		DoUpdate(cli)
+	} else if isTag(command) {
+		DoTag(cli)
+	} else if isUntag(command) {
+		DoUntag(cli)
 	} else if isRename(command) {
 		DoRename(cli)
 	} else if isGet(command, cli) {
@@ -109,6 +113,14 @@ func isDelete(command string) bool {
 
 func isUpdate(command string) bool {
 	return command == "update"
+}
+
+func isTag(command string) bool {
+	return command == "tag"
+}
+
+func isUntag(command string) bool {
+	return command == "untag"
 }
 
 func isRename(command string) bool {
@@ -315,6 +327,21 @@ func DoUpdate(c *cli.CLI) {
 	db.Save()
 }
 
+func DoTag(c *cli.CLI) {
+	db := LoadDB()
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
+	tag := c.GetStringOrDie(key)
+	entry, _ := db.GetDecrypted(key)
+	if entry.Tags == nil {
+		entry.Tags = make(map[string]bool)
+	}
+	entry.Tags[tag] = true
+	db.Put(entry)
+	db.Save()
+
+}
+
 func DoHide(c *cli.CLI) {
 	db := LoadDB()
 	command := c.GetCommand()
@@ -325,6 +352,20 @@ func DoHide(c *cli.CLI) {
 	db.Save()
 }
 
+func DoUntag(c *cli.CLI) {
+	db := LoadDB()
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
+	tag := c.GetStringOrDie(key)
+	entry, _ := db.GetDecrypted(key)
+	if entry.Tags == nil {
+		entry.Tags = make(map[string]bool)
+	}
+	delete(entry.Tags, tag)
+	db.Put(entry)
+	db.Save()
+
+}
 func DoShow(c *cli.CLI) {
 	db := LoadDB()
 	command := c.GetCommand()

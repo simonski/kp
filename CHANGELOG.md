@@ -1,3 +1,10 @@
+2022-08-18
+    github issue #15 (tagging)
+    github issue #11 (ls -a)
+    kp ls -a
+    kp archive key
+    kp unarchive key
+
 2022-08-03
 
 0.0.9

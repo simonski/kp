@@ -44,6 +44,9 @@ The commands are:
     encrypt <value>                             encrypt the value using the current openssh key
     decrypt <value>                             decrypt the value using the current openssh key
 
+    tag   <key> <tag>                           add tag to a key
+    untag <key> <tag>                           remove tag from a key
+
     hide <key>                                  archive (hide) the key
     show <key>                                  unarchive (make visible) the key
 

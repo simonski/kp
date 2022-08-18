@@ -30,16 +30,17 @@ type DB struct {
 
 // DBEntry represents the a single item in the DB
 type DBEntry struct {
-	Key         string    `json:"key"`
-	Value       string    `json:"value"`
-	Description string    `json:"description"`
-	Notes       string    `json:"notes"`
-	Username    string    `json:"username"`
-	Url         string    `json:"url"`
-	Type        string    `json:"type"`
-	LastUpdated time.Time `json:"lastUpdated"`
-	Created     time.Time `json:"created"`
-	Hidden      bool      `json:"hidden"`
+	Key         string          `json:"key"`
+	Value       string          `json:"value"`
+	Description string          `json:"description"`
+	Notes       string          `json:"notes"`
+	Username    string          `json:"username"`
+	Url         string          `json:"url"`
+	Type        string          `json:"type"`
+	Tags        map[string]bool `json:"tags"`
+	LastUpdated time.Time       `json:"lastUpdated"`
+	Created     time.Time       `json:"created"`
+	Hidden      bool            `json:"hidden"`
 }
 
 // NewKPDB constructor
