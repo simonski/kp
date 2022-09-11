@@ -20,6 +20,7 @@ import (
 func main() {
 	graphics_env := cli.GetEnvOrDefault("KP_GUI", "0") == "1"
 	cli := cli.New(os.Args)
+	cli.Shift() // drop the program name
 	graphics_cli := cli.IndexOf("-g") > -1
 	command := cli.GetCommand()
 
