@@ -7,7 +7,7 @@ require (
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
 	github.com/gizak/termui/v3 v3.1.0
 	github.com/google/uuid v1.3.0
-	github.com/simonski/cli v0.0.0-20220803153433-1f29815d1070
+	github.com/simonski/cli v0.0.0-20220911082116-e95cf5ad0c4f
 	github.com/simonski/goutils v0.0.0-20220804183810-521696e55aa5
 	golang.org/x/term v0.0.0-20220411215600-e5f449aeb171
 )
