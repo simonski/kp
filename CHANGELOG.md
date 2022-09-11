@@ -1,3 +1,7 @@
+2022-09-11
+    upgrade to latest cli
+    version increase to 0.0.12
+
 2022-08-18
     github issue #15 (tagging)
     github issue #11 (ls -a)
