@@ -1,3 +1,9 @@
+2022-09-12
+    "kp update" prints a useful usage
+    "kp ls" produces less verbose output
+    version increase to 0.0.13
+    bugfix on kp update to fail when key does not exist
+
 2022-09-11
     upgrade to latest cli
     version increase to 0.0.12
