@@ -1,3 +1,9 @@
+2022-09-13
+    "kp rename" documented
+    "kp open" created - opens the entry url (if it exists)
+    formatting tweaks
+    version increase to 0.0.14
+
 2022-09-12
     "kp update" prints a useful usage
     "kp ls" produces less verbose output

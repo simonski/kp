@@ -11,6 +11,7 @@ import (
 
 	clipboard "github.com/atotto/clipboard"
 	figure "github.com/common-nighthawk/go-figure"
+	"github.com/pkg/browser"
 	cli "github.com/simonski/cli"
 	goutils "github.com/simonski/goutils"
 	crypto "github.com/simonski/goutils/crypto"
@@ -62,6 +63,8 @@ func main() {
 		DoHide(cli)
 	} else if isShow(command) {
 		DoShow(cli)
+	} else if isOpen(command) {
+		DoOpen(cli)
 	} else if isVersion(command) {
 		DoVersion(cli)
 	} else if isPut(command, cli) {
@@ -131,6 +134,10 @@ func isRename(command string) bool {
 
 func isVersion(command string) bool {
 	return command == "version"
+}
+
+func isOpen(command string) bool {
+	return command == "open"
 }
 
 func isList(command string) bool {
@@ -286,7 +293,7 @@ func DoPut(c *cli.CLI) {
 		fmt.Printf("Error, key must be <= 25 characters.\n")
 		os.Exit(1)
 	} else if len(key) == 0 {
-		fmt.Printf("Error, key cannot be empty.")
+		fmt.Print("Usage: kp put [key] \n\t-url url\n\t-description <description>\n\t-type <type>\n\t-note <notes>\n\t-username <username>\n")
 		os.Exit(1)
 	}
 	entry, _ := db.GetDecrypted(key)
@@ -320,7 +327,7 @@ func DoUpdate(c *cli.CLI) {
 	command := c.GetCommand()
 	key := c.GetStringOrDie(command)
 	if key == "" {
-		fmt.Print("usage ./kp update [key] \n\t-url url\n\t-description <description>\n\t-type <type>\n\t-note <notes>\n\t-username <username>\n")
+		fmt.Print("Usage: kp update [key] \n\t-url url\n\t-description <description>\n\t-type <type>\n\t-note <notes>\n\t-username <username>\n")
 		os.Exit(1)
 	}
 	entry, exists := db.GetDecrypted(key)
@@ -335,6 +342,26 @@ func DoUpdate(c *cli.CLI) {
 	entry.Username = c.GetStringOrDefault("-username", entry.Username)
 	db.Put(entry)
 	db.Save()
+}
+
+func DoOpen(c *cli.CLI) {
+	db := LoadDB()
+	command := c.GetCommand()
+	key := c.GetStringOrDie(command)
+	if key == "" {
+		fmt.Print("Usage: kp open [key]")
+		os.Exit(1)
+	}
+	entry, exists := db.GetDecrypted(key)
+	if !exists {
+		fmt.Printf("%v does not exist.\n", key)
+		os.Exit(1)
+	} else if entry.Url == "" {
+		fmt.Printf("%v does not have a url to open.\n", key)
+		os.Exit(1)
+	}
+	browser.OpenURL(entry.Url)
+
 }
 
 func DoTag(c *cli.CLI) {
@@ -439,116 +466,101 @@ func DoList(c *cli.CLI, searchTerm string) {
 
 	if len(data.Entries) == 0 {
 		fmt.Printf("DB is empty.\n")
-	} else {
+		return
+	}
 
-		// terminalWidth, terminalHeight, _ := terminal.GetSize(0)
+	// terminalWidth, terminalHeight, _ := terminal.GetSize(0)
 
-		maxLength := 0
-		for key := range data.Entries {
-			entry := data.Entries[key]
-			if !includeHidden && entry.Hidden {
-				continue
-			}
-			maxLength = goutils.Max(len(key), maxLength)
+	keys := make([]string, 0)
+	max_key := len("Key") + 1
+	max_url := len("Url") + 1
+	max_username := len("Username") + 1
+	max_type := len("Type") + 1
+	max_description := len("Description") + 1
+	max_notes := len("Notes") + 1
+
+	for key, entry := range data.Entries {
+		if !includeHidden && entry.Hidden {
+			continue
+		}
+		keys = append(keys, key)
+		max_key = goutils.Max(len(entry.Key)+1, max_key)
+		max_username = goutils.Max(len(entry.Username)+1, max_username)
+		max_type = goutils.Max(len(entry.Type)+1, max_type)
+	}
+	sort.Strings(keys)
+
+	date_width := len(time.Now().Format(time.RFC822)) + 1
+	width := max_key + max_url + max_username + max_type + max_description + max_notes + (1 * date_width) + 8
+	line := strings.Repeat("-", width)
+	foundEntries := make([]DBEntry, 0)
+
+	for _, entry := range db.GetEntriesSortedByUpdatedThenKey() {
+		if !includeHidden && entry.Hidden {
+			continue
 		}
 
-		keys := make([]string, 0)
-		max_key := len("Key") + 1
-		max_url := len("Url") + 1
-		max_username := len("Username") + 1
-		max_type := len("Type") + 1
-		max_description := len("Description") + 1
-		max_notes := len("Notes") + 1
-
-		for key, entry := range data.Entries {
-			if !includeHidden && entry.Hidden {
+		if searchTerm != "" {
+			found := strings.Contains(entry.Key, searchTerm)
+			found = found || strings.Contains(entry.Description, searchTerm)
+			found = found || strings.Contains(entry.Notes, searchTerm)
+			found = found || strings.Contains(entry.Type, searchTerm)
+			found = found || strings.Contains(entry.Username, searchTerm)
+			found = found || strings.Contains(entry.Url, searchTerm)
+			if !found {
 				continue
 			}
-			keys = append(keys, key)
-			max_key = goutils.Max(len(entry.Key)+1, max_key)
-			// max_url = goutils.Max(len(entry.Url)+1, max_url)
-			max_username = goutils.Max(len(entry.Username)+1, max_username)
-			max_type = goutils.Max(len(entry.Type)+1, max_type)
-			// max_description = goutils.Max(len(entry.Description)+1, max_description)
-			// max_notes = goutils.Max(len(entry.Notes)+1, max_notes)
 		}
-		sort.Strings(keys)
+		foundEntries = append(foundEntries, entry)
+	}
 
-		date_width := len(time.Now().Format(time.RFC822)) + 1
-		width := max_key + max_url + max_username + max_type + max_description + max_notes + (1 * date_width) + 8
+	if len(foundEntries) == 0 {
+		fmt.Println("No entries found.")
+		return
+	}
 
-		line := strings.Repeat("-", width)
-		fmt.Println(line)
+	entry_line := fmt.Sprintf("|%v|%v|%v|%v|%v|%v|%v|",
+		goutils.RPadToFixedLength("Key", " ", max_key),
+		goutils.RPadToFixedLength("Username", " ", max_username),
+		goutils.RPadToFixedLength("Url", " ", max_url),
+		goutils.RPadToFixedLength("Type", " ", max_type),
+		goutils.RPadToFixedLength("Description", " ", max_description),
+		goutils.RPadToFixedLength("Notes", " ", max_notes),
+		goutils.RPadToFixedLength("Updated", " ", date_width))
+	fmt.Println(line)
+	fmt.Println(entry_line)
+	fmt.Println(line)
+	for _, entry := range foundEntries {
+		updated := entry.LastUpdated.Format(time.RFC822)
+
+		url := ""
+		if entry.Url != "" {
+			url = "... "
+		}
+
+		description := ""
+		if entry.Description != "" {
+			description = "... "
+		}
+
+		notes := ""
+		if entry.Notes != "" {
+			notes = "... "
+		}
 
 		entry_line := fmt.Sprintf("|%v|%v|%v|%v|%v|%v|%v|",
-			goutils.RPadToFixedLength("Key", " ", max_key),
-			goutils.RPadToFixedLength("Username", " ", max_username),
-			goutils.RPadToFixedLength("Url", " ", max_url),
-			goutils.RPadToFixedLength("Type", " ", max_type),
-			goutils.RPadToFixedLength("Description", " ", max_description),
-			goutils.RPadToFixedLength("Notes", " ", max_notes),
-			goutils.RPadToFixedLength("Updated", " ", date_width))
-		// goutils.RPadToFixedLength("Created", " ", date_width))
+			goutils.RPadToFixedLength(entry.Key, " ", max_key),
+			goutils.RPadToFixedLength(entry.Username, " ", max_username),
+			goutils.RPadToFixedLength(url, " ", max_url),
+			goutils.RPadToFixedLength(entry.Type, " ", max_type),
+			goutils.RPadToFixedLength(description, " ", max_description),
+			goutils.RPadToFixedLength(notes, " ", max_notes),
+			goutils.RPadToFixedLength(updated, " ", date_width))
 		fmt.Println(entry_line)
-		fmt.Println(line)
 
-		for _, entry := range db.GetEntriesSortedByUpdatedThenKey() {
-			if !includeHidden && entry.Hidden {
-				continue
-			}
-
-			if searchTerm != "" {
-				found := strings.Contains(entry.Key, searchTerm)
-				found = found || strings.Contains(entry.Description, searchTerm)
-				found = found || strings.Contains(entry.Notes, searchTerm)
-				found = found || strings.Contains(entry.Type, searchTerm)
-				found = found || strings.Contains(entry.Username, searchTerm)
-				found = found || strings.Contains(entry.Url, searchTerm)
-				if !found {
-					continue
-				}
-			}
-			// notes := entry.Notes
-			// if notes != "" {
-			// 	notes = "***"
-			// }
-			// created := entry.Created.Format(time.RFC822)
-			updated := entry.LastUpdated.Format(time.RFC822)
-
-			// desc := entry.Description
-			// if len(desc) > max_description {
-			// 	desc = desc[0:max_description-3] + "..."
-			// }
-
-			url := ""
-			if entry.Url != "" {
-				url = "... "
-			}
-
-			description := ""
-			if entry.Description != "" {
-				description = "... "
-			}
-
-			notes := ""
-			if entry.Notes != "" {
-				notes = "... "
-			}
-
-			entry_line := fmt.Sprintf("|%v|%v|%v|%v|%v|%v|%v|",
-				goutils.RPadToFixedLength(entry.Key, " ", max_key),
-				goutils.RPadToFixedLength(entry.Username, " ", max_username),
-				goutils.RPadToFixedLength(url, " ", max_url),
-				goutils.RPadToFixedLength(entry.Type, " ", max_type),
-				goutils.RPadToFixedLength(description, " ", max_description),
-				goutils.RPadToFixedLength(notes, " ", max_notes),
-				goutils.RPadToFixedLength(updated, " ", date_width))
-			// goutils.RPadToFixedLength(created, " ", date_width),
-			fmt.Println(entry_line)
-
-		}
-		fmt.Println(line)
 	}
+	fmt.Println(line)
+
 }
 
 func DoDelete(c *cli.CLI) {
@@ -557,6 +569,7 @@ func DoDelete(c *cli.CLI) {
 	if key == "" {
 		USAGE := "kp rm [key]"
 		fmt.Printf("%v\n", USAGE)
+		os.Exit(1)
 	}
 	db := LoadDB()
 	_, exists := db.GetDecrypted(key)

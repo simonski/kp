@@ -3,7 +3,7 @@ package main
 import "strings"
 
 // VERSION is the number of this beast
-const VERSION = "0.0.13"
+const VERSION = "0.0.14"
 const DB_VERSION = "0.0.1"
 
 // KP_FILE the key for the env var pointint to the file we load/save
@@ -24,35 +24,37 @@ Usage:
 
 The commands are:
 
-    ls  <search term>                           list keys 
+    ls  <search term>               list keys 
          -a (include hidden)
 
-    put <key> (-value VALUE)                    save "key/value" (read stdin if "-value" is unspecified)
-    get <key> (-stdout)                         retrieve key/value to clipboard (or -stdout)
+    put <key>                       save "key/value" (read stdin for value)
 
-    update <key>                                update metadata on the key
+    get <key> (-stdout)             retrieve key/value to clipboard (or -stdout)
+
+    update <key>                    update metadata on the key
          -description                   
          -type
          -url
          -username
          -note
 
-    search <query>                              return entries that match the search
+    open <key>                      opens the url associated with the key 
 
-    rm <key>                                    permanently remove "key"
+    rename <key1> <key2>            rename "key1" to "key2"
+    rm <key>                        permanently remove "key"
 
-    encrypt <value>                             encrypt the value using the current openssh key
-    decrypt <value>                             decrypt the value using the current openssh key
+    encrypt <value>                 encrypt the value 
+    decrypt <value>                 decrypt the value
 
-    tag   <key> <tag>                           add tag to a key
-    untag <key> <tag>                           remove tag from a key
+    tag   <key> <tag>               add tag to a key
+    untag <key> <tag>               remove tag from a key
 
-    hide <key>                                  archive (hide) the key
-    show <key>                                  unarchive (make visible) the key
+    hide <key>                      archive (hide) the key
+    show <key>                      unarchive (make visible) the key
 
-    info                                        review environment variables used
-    verify                                      check encryption keys exist and work
-    version                                     print application version
+    info                            review environment variables used
+    verify                          check encryption keys exist and work
+    version                         print application version
 
 `
 
