@@ -17,6 +17,15 @@ look at bubbletea
     d moves to delete/confirm
     mouse event over a thing
 
+
+### Per-key passwords
+
+```bash
+kp put key -p
+<password to store>
+<password to encrypt with>
+```
+
 # 1.0.0
 
 The road to 1.0 is finishing the TODO list.  Top of this page is the DOING section which
