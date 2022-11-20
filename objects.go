@@ -16,7 +16,7 @@ import (
 
 // KPDB helper struct holds the data and keys
 type KPDB struct {
-	data               DB
+	data               *DB
 	Filename           string
 	PrivateKeyFilename string
 }
@@ -26,6 +26,14 @@ type DB struct {
 	Version string             `json:"version"`
 	Entries map[string]DBEntry `json:"entries"`
 	History map[string]DBEntry `json:"history"`
+}
+
+func NewDB() *DB {
+	db := DB{}
+	db.Version = BinaryVersion()
+	db.Entries = make(map[string]DBEntry)
+	db.History = make(map[string]DBEntry)
+	return &db
 }
 
 // DBEntry represents the a single item in the DB
@@ -56,15 +64,13 @@ func (cdb *KPDB) Load(filename string, privKey string) bool {
 	cdb.PrivateKeyFilename = goutils.EvaluateFilename(privKey)
 
 	if !goutils.FileExists(cdb.Filename) {
-		db := DB{}
-		db.Entries = make(map[string]DBEntry)
+		db := NewDB()
 		cdb.data = db
 	} else {
 		jsonFile, err := os.Open(cdb.Filename)
 		if err != nil {
 			fmt.Printf("ERR %v\n", err)
-			db := DB{}
-			db.Entries = make(map[string]DBEntry)
+			db := NewDB()
 			cdb.data = db
 		} else {
 			db := DB{}
@@ -78,17 +84,17 @@ func (cdb *KPDB) Load(filename string, privKey string) bool {
 			if db.Version == "" {
 				var data map[string]DBEntry
 				json.Unmarshal(bytes, &data)
-
 				db.Entries = data
-				db.Version = DB_VERSION
-				cdb.data = db
+				db.History = make(map[string]DBEntry)
+				db.Version = BinaryVersion()
+				cdb.data = &db
 				cdb.Save()
 			} else {
 				// then it has a schema version
 				// really we should now check and upgrade, e.g.
 				// if db.Version != DB_VERSION
 				// upgrade()
-				cdb.data = db
+				cdb.data = &db
 			}
 
 			for k, v := range cdb.data.Entries {
@@ -144,7 +150,7 @@ func (cdb *KPDB) Save() bool {
 }
 
 // GetData returns the data map of all key
-func (cdb *KPDB) GetData() DB {
+func (cdb *KPDB) GetData() *DB {
 	return cdb.data
 }
 

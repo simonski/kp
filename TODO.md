@@ -1,6 +1,11 @@
 # 1.0.0 TermUI
 
+make an api
+use the findfile
+make some test harnesses
+
 look at bubbletea
+
     Add TermUI interface.
     DONE -g mode or KP_GUI=1 to launch in gui termui mode
     DONE q quits

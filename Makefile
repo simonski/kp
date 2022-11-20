@@ -19,11 +19,14 @@ usage:
 
 setup:	
 	go install honnef.co/go/tools/cmd/staticcheck@latest
+	go get github.com/simonski/bn
+	go install github.com/simonski/bn
 	
 clean:
 	go clean
 	
 build: clean test format
+	bn revision
 	go fmt
 	go build
 	

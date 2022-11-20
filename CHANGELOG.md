@@ -1,3 +1,7 @@
+2022-11-20
+    integrated bn Buildnumber
+    bugfix on initial kp usage (bad json format)
+
 2022-09-13
     "kp rename" documented
     "kp open" created - opens the entry url (if it exists)
