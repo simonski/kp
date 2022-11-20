@@ -2,6 +2,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"sort"
@@ -17,6 +18,16 @@ import (
 	crypto "github.com/simonski/goutils/crypto"
 	terminal "golang.org/x/term"
 )
+
+//go:embed Buildnumber
+var Buildnumber embed.FS
+
+func BinaryVersion() string {
+	data, _ := Buildnumber.ReadFile("Buildnumber")
+	v := string(data)
+	v = strings.ReplaceAll(v, "\n", "")
+	return v
+}
 
 func main() {
 
@@ -587,5 +598,67 @@ func DoUsage(c *cli.CLI) {
 }
 
 func DoVersion(c *cli.CLI) {
-	fmt.Printf("%v\n", VERSION)
+	fmt.Printf("%v\n", BinaryVersion())
+}
+
+// Findfile looks in the current directory then "walks" upwards
+// until it either finds a file matching the name or stops at $HOME
+// If a file is not found, filename is returned as-is
+func Findfile(filename string, VERBOSE bool) string {
+	// } else {
+	home := os.Getenv("HOME")
+	if VERBOSE {
+		fmt.Printf("Home=%v\n", home)
+	}
+	path, _ := os.Getwd()
+	if VERBOSE {
+		fmt.Printf("cur_dir   : %v\n", path)
+	}
+
+	new_path := path
+	for {
+		candidate := new_path + "/" + filename
+		if goutils.FileExists(candidate) {
+			if VERBOSE {
+				fmt.Printf("candidate : %v [EXIST!]\n", candidate)
+			}
+			return candidate
+		}
+		if VERBOSE {
+			fmt.Printf("candidate : %v [NOT EXIST]\n ", candidate)
+		}
+
+		if new_path == home {
+			if VERBOSE {
+				fmt.Println("new_path == home, returning original")
+			}
+			return filename
+		} else {
+			if VERBOSE {
+				fmt.Println("new_path != home")
+			}
+			// take a directory off the path and put the fileame on
+			splits := strings.Split(new_path, "/")
+			new_path = ""
+			for index := 0; index < len(splits)-1; index++ {
+				if splits[index] == "" {
+					continue
+				}
+				new_path += "/"
+				new_path += splits[index]
+			}
+			if VERBOSE {
+				fmt.Printf("new_path  : %v\n", new_path)
+			}
+			candidate = new_path + "/" + filename
+			if VERBOSE {
+				fmt.Printf("candidate : %v\n", candidate)
+			}
+			if goutils.FileExists(candidate) {
+				return candidate
+			}
+
+		}
+	}
+
 }
