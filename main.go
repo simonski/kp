@@ -94,7 +94,6 @@ func main() {
 		DoRename(cli)
 	} else if isGet(command, cli) {
 		DoGet(cli)
-		DoDescribe(cli)
 	} else if isDelete(command) {
 		DoDelete(cli)
 	} else if command != "" {
@@ -283,12 +282,15 @@ func DoGet(c *cli.CLI) {
 	entry, exists := db.GetDecrypted(key)
 	if exists {
 		value := entry.Value
-		err := clipboard.WriteAll(value)
-		if err != nil {
-			fmt.Printf("%v", err)
-		}
 		if c.IndexOf("-stdout") > -1 {
 			fmt.Printf("%v\n", value)
+		} else {
+			err := clipboard.WriteAll(value)
+			if err != nil {
+				fmt.Printf("%v", err)
+			} else {
+				DoDescribe(c)
+			}
 		}
 	} else {
 		fmt.Printf("'%v' does not exist.\n", key)

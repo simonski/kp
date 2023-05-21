@@ -1,5 +1,14 @@
 # 1.0.0 TermUI
 
+design a remote storage mechanism
+    (s3, azure, gcs, digitalocean)
+    example terraform
+    dropbox
+    onedrive
+    google storage
+    iCloud
+    API-centric using a central storage service? (BAD IDEA!)
+
 make an api
 use the findfile
 make some test harnesses
