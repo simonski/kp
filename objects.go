@@ -158,7 +158,12 @@ func (cdb *KPDB) GetData() *DB {
 func (cdb *KPDB) GetDecrypted(key string) (DBEntry, bool) {
 	entry, exists := cdb.data.Entries[key]
 	if exists {
-		decValue, _ := cdb.Decrypt(entry.Value)
+		decValue, e := cdb.Decrypt(entry.Value)
+		if e != nil {
+			fmt.Println("Failed to decrypt:")
+			fmt.Println(e)
+			os.Exit(1)
+		}
 		entry.Value = decValue
 	}
 	return entry, exists
