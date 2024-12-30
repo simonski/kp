@@ -61,6 +61,13 @@ kp put <keyname>
 >> STDIN value
 ```
 
+### Store a key/value (but dont overwrite)
+
+```bash
+kp put <keyname> -no-overwrite
+>> STDIN value
+```
+
 ### Retrieve the value of a key to your clipboard
 
 ```bash
