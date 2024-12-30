@@ -16,6 +16,15 @@ To build locally
 make
 ```
 
+## Signing (macOS)
+
+If the binary is killed by macOS instantly, you need to sign it.  You need a developer ID for this.
+
+```bash
+security find-identity -v
+codesign ${IDENTITY} kp
+```
+
 To see the help targets
 
 ```bash

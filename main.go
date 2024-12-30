@@ -309,7 +309,13 @@ func DoPut(c *cli.CLI) {
 		fmt.Print("Usage: kp put [key] \n\t-url url\n\t-description <description>\n\t-type <type>\n\t-note <notes>\n\t-username <username>\n")
 		os.Exit(1)
 	}
-	entry, _ := db.GetDecrypted(key)
+
+	noOverwrite := c.Contains("-no-overwrite")
+	entry, exists := db.GetDecrypted(key)
+	if noOverwrite && exists {
+		fmt.Printf("Error, '%v' already exists.\n", key)
+		os.Exit(1)
+	}
 	entry.Key = key
 	entry.Description = c.GetStringOrDefault("-description", entry.Description)
 	entry.Type = c.GetStringOrDefault("-type", entry.Type)
