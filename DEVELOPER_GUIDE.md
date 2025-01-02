@@ -25,6 +25,12 @@ security find-identity -v
 codesign ${IDENTITY} kp
 ```
 
+or
+
+```bash
+codesign -s - kp
+```
+
 To see the help targets
 
 ```bash
