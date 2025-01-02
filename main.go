@@ -308,6 +308,10 @@ func DoGet(c *cli.CLI) {
 func DoPut(c *cli.CLI) {
 	db := LoadDB()
 	command := c.GetCommand()
+	prompt := c.GetStringOrDefault("-prompt", "")
+	if prompt != "" {
+		fmt.Print(prompt + " : ")
+	}
 	key := c.GetStringOrDie(command)
 	if len(key) > 125 {
 		fmt.Printf("Error, key must be <= 125 characters.\n")
