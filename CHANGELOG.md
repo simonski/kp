@@ -1,3 +1,7 @@
+2025-01-02
+    `kp put` now uses -prompt, -default or -random
+    `kp random`
+
 2022-11-20
     integrated bn Buildnumber
     bugfix on initial kp usage (bad json format)
