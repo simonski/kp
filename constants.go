@@ -23,11 +23,13 @@ The commands are:
     ls  <search term>               list keys 
          -a (include hidden)
 
-    put <key>                       save "key/value" (read stdin for value)
-                                      -value (if specified avoids reading stdin) 
-                                      -default (if specified then used when <enter> is pressed)
+    put <key>                       save "key/value" (read stdin for value), or:
+                                      -value   (if specified avoids reading stdin) 
+                                      -default (if specified then used when no value is entered)
+                                      -random  (if specified then a 64-character random string is used)
 
-    get <key> (-stdout)             retrieve key/value to clipboard (or -stdout)
+    get <key>                       retrieve key/value to clipboard
+                                      -stdout - writes directly to stdout 
 
     update <key>                    update metadata on the key
          -description                   
@@ -43,6 +45,8 @@ The commands are:
 
     encrypt <value>                 encrypt the value 
     decrypt <value>                 decrypt the value
+
+    random                          create a 64-character random string
 
     tag   <key> <tag>               add tag to a key
     untag <key> <tag>               remove tag from a key

@@ -29,6 +29,7 @@ build: clean test format
 	bn revision
 	go fmt
 	go build
+	codesign -s - ./kp
 	
 test:
 	go test

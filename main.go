@@ -2,6 +2,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"embed"
 	"fmt"
 	"os"
@@ -80,6 +81,8 @@ func main() {
 		DoVersion(cli)
 	} else if isPut(command, cli) {
 		DoPut(cli)
+	} else if isRandom(command, cli) {
+		DoRandom(cli)
 	} else if isEncrypt(command) {
 		DoEncrypt(cli)
 	} else if isDecrypt(command) {
@@ -169,6 +172,10 @@ func isGet(command string, c *cli.CLI) bool {
 
 func isPut(command string, c *cli.CLI) bool {
 	return command == "put"
+}
+
+func isRandom(command string, c *cli.CLI) bool {
+	return command == "random"
 }
 
 func DoGraphics(c *cli.CLI) {
@@ -332,21 +339,26 @@ func DoPut(c *cli.CLI) {
 			fmt.Printf("Error, -value cannot be empty.")
 			os.Exit(1)
 		}
+	} else if c.IndexOf("-random") > -1 {
+		password, _ = CreatePassword(64)
 	} else {
 		bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
 		password = string(bytePassword)
 	}
 
 	if password != "" {
-		fmt.Println("1")
 		entry.Value = password
 	} else if defaultValue != "" {
-		fmt.Println("2")
 		entry.Value = defaultValue
 	}
 
 	db.Put(entry)
 	db.Save()
+}
+
+func DoRandom(c *cli.CLI) {
+	password, _ := CreatePassword(64)
+	fmt.Println(password)
 }
 
 func DoUpdate(c *cli.CLI) {
@@ -677,4 +689,26 @@ func Findfile(filename string, VERBOSE bool) string {
 		}
 	}
 
+}
+
+func CreatePassword(length int) (string, error) {
+	const ansiStart = 32
+	const ansiEnd = 126
+	charRange := ansiEnd - ansiStart + 1
+
+	// Create a slice to hold the random characters
+	result := make([]byte, length)
+
+	for i := 0; i < length; i++ {
+		randomByte := make([]byte, 1)
+		_, err := rand.Read(randomByte)
+		if err != nil {
+			return "", err
+		}
+
+		// Map the random byte to the ANSI printable range
+		result[i] = byte(ansiStart + (int(randomByte[0]) % charRange))
+	}
+
+	return string(result), nil
 }
