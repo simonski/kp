@@ -24,6 +24,8 @@ The commands are:
          -a (include hidden)
 
     put <key>                       save "key/value" (read stdin for value)
+                                      -value (if specified avoids reading stdin) 
+                                      -default (if specified then used when <enter> is pressed)
 
     get <key> (-stdout)             retrieve key/value to clipboard (or -stdout)
 

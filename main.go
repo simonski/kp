@@ -303,12 +303,14 @@ func DoPut(c *cli.CLI) {
 	command := c.GetCommand()
 	key := c.GetStringOrDie(command)
 	if len(key) > 125 {
-		fmt.Printf("Error, key must be <= 25 characters.\n")
+		fmt.Printf("Error, key must be <= 125 characters.\n")
 		os.Exit(1)
 	} else if len(key) == 0 {
 		fmt.Print("Usage: kp put [key] \n\t-url url\n\t-description <description>\n\t-type <type>\n\t-note <notes>\n\t-username <username>\n")
 		os.Exit(1)
 	}
+
+	defaultValue := c.GetStringOrDefault("-default", "")
 
 	noOverwrite := c.Contains("-no-overwrite")
 	entry, exists := db.GetDecrypted(key)
@@ -334,9 +336,15 @@ func DoPut(c *cli.CLI) {
 		bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
 		password = string(bytePassword)
 	}
+
 	if password != "" {
+		fmt.Println("1")
 		entry.Value = password
+	} else if defaultValue != "" {
+		fmt.Println("2")
+		entry.Value = defaultValue
 	}
+
 	db.Put(entry)
 	db.Save()
 }
