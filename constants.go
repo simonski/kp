@@ -24,9 +24,9 @@ The commands are:
          -a (include hidden)
 
     put <key>                       save "key/value" (read stdin for value), or:
-                                      -value   (if specified avoids reading stdin) 
-                                      -default (if specified then used when no value is entered)
-                                      -random  (if specified then a 64-character random string is used)
+                                      -value           (if specified avoids reading stdin) 
+                                      -default <value> (if specified then used when no value is entered)
+                                      -random <size>   (if specified then a N-character random string is used)
 
     get <key>                       retrieve key/value to clipboard
                                       -stdout - writes directly to stdout 
@@ -46,7 +46,7 @@ The commands are:
     encrypt <value>                 encrypt the value 
     decrypt <value>                 decrypt the value
 
-    random                          create a 64-character random string
+    random <size>                   create a 64-character random string
 
     tag   <key> <tag>               add tag to a key
     untag <key> <tag>               remove tag from a key

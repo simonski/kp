@@ -344,7 +344,8 @@ func DoPut(c *cli.CLI) {
 			os.Exit(1)
 		}
 	} else if c.IndexOf("-random") > -1 {
-		password, _ = CreatePassword(64)
+		randomSize := c.GetIntOrDefault("-random", 64)
+		password, _ = CreatePassword(randomSize)
 	} else {
 		bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
 		password = string(bytePassword)
@@ -361,7 +362,8 @@ func DoPut(c *cli.CLI) {
 }
 
 func DoRandom(c *cli.CLI) {
-	password, _ := CreatePassword(64)
+	size := c.GetIntOrDefault("random", 64)
+	password, _ := CreatePassword(size)
 	fmt.Println(password)
 }
 
@@ -695,24 +697,36 @@ func Findfile(filename string, VERBOSE bool) string {
 
 }
 
+const AllowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?/"
+
 func CreatePassword(length int) (string, error) {
-	const ansiStart = 32
-	const ansiEnd = 126
-	charRange := ansiEnd - ansiStart + 1
+	if length <= 0 {
+		return "", fmt.Errorf("invalid password length")
+	}
 
-	// Create a slice to hold the random characters
-	result := make([]byte, length)
+	charPool := []rune(AllowedChars)
+	password := make([]rune, length)
 
-	for i := 0; i < length; i++ {
-		randomByte := make([]byte, 1)
-		_, err := rand.Read(randomByte)
+	for i := range password {
+		randomIndex, err := randomInt(len(charPool))
 		if err != nil {
 			return "", err
 		}
-
-		// Map the random byte to the ANSI printable range
-		result[i] = byte(ansiStart + (int(randomByte[0]) % charRange))
+		password[i] = charPool[randomIndex]
 	}
 
-	return string(result), nil
+	return string(password), nil
+}
+
+func randomInt(max int) (int, error) {
+	b := make([]byte, 1)
+	for {
+		_, err := rand.Read(b)
+		if err != nil {
+			return 0, err
+		}
+		if int(b[0]) < 256-(256%max) {
+			return int(b[0]) % max, nil
+		}
+	}
 }
