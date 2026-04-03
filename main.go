@@ -62,6 +62,15 @@ func main() {
 	result := DoVerify(cli, false)
 	if !result {
 		fmt.Println("Failed to verify encryption.")
+		fmt.Println("")
+		fmt.Println("Run 'kp verify' for details, or create an encryption key with:")
+		fmt.Println("")
+		keyFile := os.Getenv(KP_KEY)
+		if keyFile == "" {
+			keyFile = DEFAULT_KEY_FILE
+		}
+		fmt.Printf("    %v\n", GetSSHCommand(keyFile))
+		fmt.Println("")
 		os.Exit(1)
 	}
 

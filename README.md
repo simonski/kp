@@ -1,153 +1,94 @@
 # KP
 
-A terminal tool to manage key/pairs.
-
-This is OSS - if you want to contribute please read the [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md).
+A terminal tool to manage encrypted key/value pairs.
 
 ## Install
 
-Install via `go get`
+### macOS (Homebrew)
 
 ```bash
-go get github.com/simonski/kp
+brew install simonski/tap/kp
 ```
 
-This will install `kp` onto your `$GOBIN`. Please ensure `$GOBIN` is on your `$PATH`.
-
-## Setup
-
-Once you've installed kp and can type `kp version`, you will need to configure kp.
+### From source
 
 ```bash
-kp verify
+go install github.com/simonski/kp@latest
 ```
 
-By default, `kp` stores keypairs to a `~/.kpfile`.  This can be controlled with the environment variable `KP_FILE`
+Ensure `$GOBIN` is on your `$PATH`.
 
-## Encryption
+## Quick Start
 
-The `~/.kpfile` itself is plaintext, the password is encrypted.
-
-|name|purpose|default value|
-|----|-------|-------------|
-`KP_KEY`|Flename of private key|`~/.ssh/kp.id_rsa`
-
-Create your encryption key
+After installing, kp needs an RSA key for encryption. Generate one:
 
 ```bash
 ssh-keygen -b 2048 -t rsa -N "" -m pkcs8 -f ~/.ssh/kp.id_rsa
 ```
 
-Or re-use one? - up to you:
-
-```bash
-export KP_KEY=~/path/to/id_rsa
-```
-
-Finally, confirm kp is setup properly:
+Verify everything is working:
 
 ```bash
 kp verify
 ```
 
-Assuming you get a "KP is setup correctly." message, you can then use `kp` in the following manner - if you don't, it will explain what needs changing in the `verify` command itself.
+You should see "KP is setup correctly." See [QUICKSTART.md](QUICKSTART.md) for a full walkthrough.
 
 ## Usage
 
-### Store a key/value
-
 ```bash
-kp put <keyname>
->> STDIN value
+kp put mykey                  # store a value (prompts for input)
+kp put mykey -value "secret"  # store a value inline
+kp put mykey -random 32       # store a generated 32-char password
+kp get mykey                  # copy value to clipboard
+kp get mykey -stdout          # print value to stdout
+kp ls                         # list all keys
+kp ls -a                      # list all keys (including hidden)
+kp ls widget                  # search for keys matching "widget"
+kp rm mykey                   # delete a key
+kp rename old new             # rename a key
+kp hide mykey                 # hide a key from default listing
+kp show mykey                 # unhide a key
+kp open mykey                 # open the URL associated with a key
+kp info                       # show current configuration
+kp version                    # print version
 ```
 
-### Store a key/value (but dont overwrite)
+### Updating metadata
 
 ```bash
-kp put <keyname> -no-overwrite
->> STDIN value
+kp update mykey -url "https://example.com" -username "me" -description "My account" -notes "some notes" -type "login"
 ```
 
-### Retrieve the value of a key to your clipboard
+### Tags
 
 ```bash
-kp get <keyname>
+kp tag mykey work             # add a tag
+kp untag mykey work           # remove a tag
 ```
 
-### List all keys
+## Environment Variables
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `KP_FILE` | `~/.kpfile` | Path to the encrypted key/pair database |
+| `KP_KEY` | `~/.ssh/kp.id_rsa` | Path to RSA private key for encryption |
+| `KP_GUI` | `0` | Set to `1` to launch TUI mode |
+
+## TUI Mode
 
 ```bash
-kp ls
+kp -g
 ```
 
-### List all keys (including hidden)
-
-```bash
-kp ls -a
-```
-
-### Search for an entry
-
-```bash
-kp ls widget
-```
-
-### Update a key
-
-```bash
-kp update <key> 
- -type         "type"
- -url          "url"
- -username     "username"
- -description  "description"
- -notes        "notes"
-```
-
-### Remove a key
-
-```bash
-kp rm <keyname>
-```
-
-Get help on any command:
-
-```bash
-kp
-```
-
-### Hide a key
-
-```bash
-kp hide <keyname>
-```
-
-### Show the key
-
-```bash
-kp show <keyname>
-```
-
-## Environment variables
-
-kp tries to run with sensible defaults. You can override them using the following envinronment variables:
-
-|name|description|default value|
------|------------|-------------|
-`$KP_FILE`|The file keypairs are stored|`~/.kpfile`
-`$KP_KEY`|The encryption key|`~/.ssh/kp.id_rsa`
-`$KP_GUI`|Run in graphics mode (`0` or `1`)|`0`
+Or set `KP_GUI=1`. Q quits, Enter copies value to clipboard, E enters edit mode.
 
 ## Development
 
-### Dependencies
+See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for contribution guidelines.
 
-```bash
-brew install simonski/tap/ticket              # tk - task tracking
-brew install --cask goreleaser/tap/goreleaser  # goreleaser - cross-platform releases
-```
+Tickets are managed with [tk](https://github.com/simonski/ticket) (`brew install simonski/tap/ticket`). Run `tk list` to see open work.
 
-Run `tk list` to see open tickets. Run `make setup` to install Go tooling dependencies.
+## License
 
-## Releases
-
-I use github actions to create a crossplatform release binary on a tag.
+MIT

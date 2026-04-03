@@ -9,15 +9,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Development Commands
 
 ```bash
-make setup      # Install dependencies (staticcheck, bn)
-make build      # Clean, test, format, build (runs staticcheck + go fmt)
-make test       # Run tests: go test
-make install    # go install
-make publish    # Cross-compile, tag, push, gh release, update homebrew tap
-go test -run TestMain  # Run a single test
+make setup              # Install dependencies (staticcheck, bn)
+make build              # Lint, bump version, format, build native binary
+make test               # Run tests: go test
+make install            # go install
+make release            # Cross-compile for darwin/linux × amd64/arm64, create GitHub release via gh
+make release-formula    # Generate Homebrew formula from template, push to simonski/homebrew-tap via gh API
+go test -run TestMain   # Run a single test
 ```
 
-The `build` target runs `staticcheck ./...` and `go fmt ./...` before compiling. It uses `bn revision` to increment the embedded `Buildnumber` file and codesigns the binary on macOS.
+Release flow: `make release` then `make release-formula`. The formula template lives in `homebrew/kp.rb.tmpl`.
 
 ## Architecture
 
