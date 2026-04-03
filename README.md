@@ -141,13 +141,12 @@ kp tries to run with sensible defaults. You can override them using the followin
 
 ### Dependencies
 
-Task tracking uses [tk](https://github.com/simonski/tk), which can be installed via Homebrew:
-
 ```bash
-brew install simonski/tap/ticket
+brew install simonski/tap/ticket              # tk - task tracking
+brew install --cask goreleaser/tap/goreleaser  # goreleaser - cross-platform releases
 ```
 
-Run `tk list` to see open tickets.
+Run `tk list` to see open tickets. Run `make setup` to install Go tooling dependencies.
 
 ## Releases
 

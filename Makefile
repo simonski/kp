@@ -22,6 +22,7 @@ setup:
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go get github.com/simonski/bn
 	go install github.com/simonski/bn
+	brew install --cask goreleaser/tap/goreleaser
 
 clean:
 	go clean

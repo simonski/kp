@@ -8,7 +8,7 @@ require (
 	github.com/gizak/termui/v3 v3.1.0
 	github.com/google/uuid v1.3.0
 	github.com/simonski/cli v0.0.0-20220919133012-ba6c528d0d37
-	github.com/simonski/goutils v0.0.0-20220804183810-521696e55aa5
+	github.com/simonski/goutils v0.0.0-20230903103029-7a7712f9a9d2
 	golang.org/x/term v0.0.0-20220411215600-e5f449aeb171
 )
 
@@ -33,7 +33,7 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.22.7 // indirect
-	github.com/simonski/bn v0.0.0-20221119133121-08f1826e7593 // indirect
+	github.com/simonski/bn v0.0.0-20230903111252-7d2af74b8694 // indirect
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
