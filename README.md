@@ -137,6 +137,18 @@ kp tries to run with sensible defaults. You can override them using the followin
 `$KP_KEY`|The encryption key|`~/.ssh/kp.id_rsa`
 `$KP_GUI`|Run in graphics mode (`0` or `1`)|`0`
 
+## Development
+
+### Dependencies
+
+Task tracking uses [tk](https://github.com/simonski/tk), which can be installed via Homebrew:
+
+```bash
+brew install simonski/tap/ticket
+```
+
+Run `tk list` to see open tickets.
+
 ## Releases
 
 I use github actions to create a crossplatform release binary on a tag.
