@@ -13,10 +13,11 @@ make setup      # Install dependencies (staticcheck, bn)
 make build      # Clean, test, format, build (runs staticcheck + go fmt)
 make test       # Run tests: go test
 make install    # go install
+make publish    # Cross-compile, tag, push, gh release, update homebrew tap
 go test -run TestMain  # Run a single test
 ```
 
-The build step uses `bn revision` to increment the embedded `Buildnumber` file before compiling, and codesigns the binary on macOS.
+The `build` target runs `staticcheck ./...` and `go fmt ./...` before compiling. It uses `bn revision` to increment the embedded `Buildnumber` file and codesigns the binary on macOS.
 
 ## Architecture
 
@@ -56,7 +57,7 @@ Tickets are managed with `tk` (install via `brew install simonski/tap/ticket`). 
 
 ## CI
 
-GitHub Actions workflows in `.github/workflows/`: `go_again.yml` (compile and test), `goreleaser.yml` (cross-platform release on tag).
+GitHub Actions workflows in `.github/workflows/`: `go_again.yml` (compile and test). Releases are done locally via `make publish`.
 
 - use red/green testing
 - do not push if any tests are failing
